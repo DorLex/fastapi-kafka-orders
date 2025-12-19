@@ -13,11 +13,11 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - pgdb
+      - postgres
       - kafka
     entrypoint: [ "docker/wait-for-it.sh", "${KAFKA_HOST}:${KAFKA_PORT}", "--" ]
     command: "uvicorn src.main:app --host 0.0.0.0 --port 8000"
-  
+
   order_processing_app:
     build:
       context: ../
@@ -27,12 +27,12 @@ services:
     volumes:
       - ../logs/order_processing_app:/project/logs
     depends_on:
-      - pgdb
+      - postgres
       - kafka
     entrypoint: [ "docker/wait-for-it.sh", "${KAFKA_HOST}:${KAFKA_PORT}", "--" ]
     command: "python -m src.run_consumer"
 
-  pgdb:
+  postgres:
     image: postgres:15.5-alpine3.19
     env_file:
       - .env
@@ -61,6 +61,7 @@ services:
       - "8080:8080"
     depends_on:
       - kafka
+
 
 volumes:
   postgres_data:

@@ -1,14 +1,14 @@
 server:
 	uvicorn src.main:app --reload
 
-order_processing_app:
+order_worker:
 	python -m src.run_consumer
 
-docker_up:
-	cd docker/ && docker compose up --build
+up:
+	docker compose -f ./docker/docker-compose.yml up -d --build
 
-data_docker_up:
-	cd docker/ && docker compose up pgdb kafka
+infra:
+	docker compose -f ./docker/docker-compose.yml up -d postgres kafka kafka-ui
 
 test:
 	pytest -vv -s
