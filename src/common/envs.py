@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from src.common.constants.paths import BASE_DIR
 
 
-class Settings(BaseSettings):
+class EnvConfig(BaseSettings):
     # Backend
     sqlalchemy_echo: bool = True
 
@@ -40,4 +40,4 @@ class Settings(BaseSettings):
     )
 
 
-config: Settings = Settings()
+env_config: EnvConfig = EnvConfig()

@@ -1,56 +1,55 @@
-from sqlalchemy import select
+from sqlalchemy import ScalarResult, select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from src.app.accounts.dto.user import UserCreateSchema
 from src.app.accounts.models import User
-from src.app.accounts.schemas import UserCreateSchema
 from src.app.accounts.utils.auth import get_password_hash
 
 
 class UserRepository:
+    def __init__(self, db: AsyncSession) -> None:
+        self.db = db
 
-    def __init__(self, session: AsyncSession):
-        self._session = session
+    async def create(self, user_data: UserCreateSchema) -> User:
+        hashed_password: str = get_password_hash(user_data.password)
 
-    async def create(self, user: UserCreateSchema) -> User:
-        hashed_password = get_password_hash(user.password)
-
-        db_user = User(
-            username=user.username,
-            email=user.email,
+        user: User = User(
+            username=user_data.username,
+            email=user_data.email,
             hashed_password=hashed_password,
         )
 
-        self._session.add(db_user)
-        await self._session.flush()
+        self.db.add(user)
+        await self.db.flush()
 
-        return db_user
+        return user
 
-    async def get_all(self, skip: int = 0, limit: int = 100):
+    async def get_users(self, skip: int = 0, limit: int = 100):
         query = select(User).offset(skip).limit(limit)
-        result = await self._session.scalars(query)
+        result = await self.db.scalars(query)
         return result.all()
 
-    async def get_all_with_orders(self, skip: int = 0, limit: int = 100):
-        query = (
+    async def get_users_with_orders(self, skip: int = 0, limit: int = 100):
+        query: Select = (
             select(User)
             .options(joinedload(User.orders))
             .order_by(User.id)
             .offset(skip).limit(limit)
         )
 
-        result = await self._session.scalars(query)
+        result = await self.db.scalars(query)
         return result.unique().all()
 
-    async def get_filter_by(self, **filters):
-        query = select(User).filter_by(**filters)
-        result = await self._session.scalars(query)
+    async def get_users_filter_by(self, **filters) -> list[User]:
+        query: Select = select(User).filter_by(**filters)
+        result: ScalarResult[User] = await self.db.scalars(query)
         return result.all()
 
-    async def get_by_username(self, username: str) -> User:
+    async def get_user_by_username(self, username: str) -> User:
         query = select(User).where(User.username == username)
-        return await self._session.scalar(query)
+        return await self.db.scalar(query)
 
-    async def get_by_id(self, user_id: int) -> User:
+    async def get_user_by_id(self, user_id: int) -> User:
         query = select(User).where(User.id == user_id)
-        return await self._session.scalar(query)
+        return await self.db.scalar(query)

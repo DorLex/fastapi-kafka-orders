@@ -2,14 +2,14 @@ from fastapi import Depends
 from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.accounts.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from src.app.accounts.exceptions import InvalidTokenException, CredentialsException
-from src.app.accounts.models import User
-from src.app.accounts.schemas.token import TokenDataSchema
-from src.app.accounts.services.user import UserService
-from src.app.accounts.utils.auth import verify_password, generate_token_expire
+from src.app.accounts.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from src.app.accounts.dependencies import oauth2_scheme
-from src.__dependencies import get_session
+from src.app.accounts.dto.token import TokenDTO
+from src.app.accounts.exceptions import CredentialsException, InvalidTokenException
+from src.app.accounts.models import User
+from src.app.accounts.services.user import UserService
+from src.app.accounts.utils.auth import generate_token_expire, verify_password
+from src.common.db import get_db
 
 
 def create_access_token(user: User) -> str:
@@ -21,15 +21,13 @@ def create_access_token(user: User) -> str:
     return encoded_jwt
 
 
-def authenticate_user(db_user: User, password: str) -> User | bool:
-    if not db_user:
+def check_credentials(user: User, password: str) -> bool:
+    if not verify_password(password, user.hashed_password):
         return False
-    if not verify_password(password, db_user.hashed_password):
-        return False
-    return db_user
+    return True
 
 
-def verify_token(token: str = Depends(oauth2_scheme)) -> TokenDataSchema:
+def verify_token(token: str = Depends(oauth2_scheme)) -> TokenDTO:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
@@ -39,7 +37,7 @@ def verify_token(token: str = Depends(oauth2_scheme)) -> TokenDataSchema:
         if not user_id or not username:
             raise InvalidTokenException
 
-        token_data = TokenDataSchema(user_id=user_id, username=username)
+        token_data: TokenDTO = TokenDTO(user_id=user_id, username=username)
 
     except JWTError:
         raise InvalidTokenException
@@ -48,10 +46,12 @@ def verify_token(token: str = Depends(oauth2_scheme)) -> TokenDataSchema:
 
 
 async def get_current_user(
-    token_data: TokenDataSchema = Depends(verify_token),
-    session: AsyncSession = Depends(get_session),
+    token_data: TokenDTO = Depends(verify_token),
+    db: AsyncSession = Depends(get_db),
 ) -> User:
-    db_user: User = await UserService(session).get_by_id(token_data.user_id)
-    if not db_user:
+    user: User = await UserService(db).get_user_by_id(token_data.user_id)
+    if not user:
         raise CredentialsException
-    return db_user
+
+    # TODO: лучше возвращать UserDTO, а не БД-сущность
+    return user

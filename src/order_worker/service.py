@@ -1,59 +1,45 @@
 from asyncio import sleep
+from logging import getLogger, Logger
 
 from pydantic import EmailStr
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from __logger.logger import get_logger
-from src.app.notifications import EmailSchema
-from src.app.notifications.services.email_build import EmailBuildService
-from src.app.notifications import EmailNotificationService
 from src.app.orders.enums import OrderStatusEnum
 from src.app.orders.models import Order
+from src.app.orders.repository import OrderRepository
 from src.app.orders.service import OrderService
+from src.common.db import AsyncSessionMaker
 
-logger = get_logger(__name__)
+logger: Logger = getLogger(__name__)
 
 
-class OrderProcessingService:
-
-    def __init__(self, session: AsyncSession):
-        self._session = session
-        self._order_service = OrderService(self._session)
-        self._notification_service = EmailNotificationService()
-        self._email_build_service = EmailBuildService()
-
+class OrderProcessor:
     async def execute_order(self, order_id: int, customer_email: EmailStr) -> None:
-        db_order: Order = await self._order_service.get_by_id(order_id)
+        async with AsyncSessionMaker() as db:
+            order_service: OrderService = OrderService(OrderRepository(db))
 
-        try:
-            if not db_order:
-                await self.order_not_found(order_id, customer_email)
+            order: Order | None = await order_service.get_order_by_id(order_id)
+            try:
+                if not order:
+                    await self.order_not_found(order_id, customer_email)
 
-            await self._order_service.update_status(db_order, OrderStatusEnum.in_processing)
-            await self._session.commit()
+                await order_service.update_status(order, OrderStatusEnum.in_processing)
+                await db.commit()
 
-            order_processing_successful = await self.do_something_with_order(db_order)
+                order_processing_successful: bool = await self.do_something_with_order(order)
 
-            if not order_processing_successful:
-                await self.order_processing_failed(db_order)
+                if not order_processing_successful:
+                    await self.order_processing_failed(order)
 
-            await self._order_service.update_status(db_order, OrderStatusEnum.completed)
-            await self._session.commit()
+                await order_service.update_status(order, OrderStatusEnum.completed)
+                await db.commit()
 
-        except Exception as ex:
-            logger.error(ex)
+            except Exception as ex:
+                logger.error(ex)
 
-    async def order_not_found(self, order_id: int, customer_email: EmailStr) -> None:
-        email: EmailSchema = self._email_build_service.build_order_not_found_email(order_id, customer_email)
-        await self._notification_service.send_email(email)
-        raise Exception(f'Заказ №{order_id} не найден!')
+    async def order_processing_failed(self, order: Order) -> None:
+        await self._order_service.update_status(order, OrderStatusEnum.failed)
+        raise Exception(f'Произошла ошибка при обработке заказа №{order.id}')
 
-    async def order_processing_failed(self, db_order: Order) -> None:
-        email: EmailSchema = self._email_build_service.build_order_error_email(db_order)
-        await self._notification_service.send_email(email)
-        await self._order_service.update_status(db_order, OrderStatusEnum.failed)
-        raise Exception(f'Произошла ошибка при обработке заказа №{db_order.id}!')
-
-    async def do_something_with_order(self, _):
+    async def do_something_with_order(self, _: Order) -> bool:
         await sleep(10)
         return True

@@ -3,8 +3,12 @@ from datetime import datetime, timezone, timedelta
 from src.app.accounts.config import pwd_context
 
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+def get_password_hash(password: str) -> str:
+    hashed_password = pwd_context.hash(password)
+    print()
+    print(f'{type(hashed_password)=}')
+    print()
+    return hashed_password
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

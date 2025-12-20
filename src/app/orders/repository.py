@@ -1,55 +1,57 @@
-from sqlalchemy import select
+from logging import getLogger, Logger
+
+from sqlalchemy import ScalarResult, select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from __logger.logger import get_logger
 from src.app.accounts.models import User
+from src.app.orders.dto.order import OrderCreateSchema
 from src.app.orders.enums import OrderStatusEnum
 from src.app.orders.models import Order
-from src.app.orders.schemas.order import OrderCreateSchema
 
-logger = get_logger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class OrderRepository:
-    def __init__(self, session: AsyncSession):
-        self._session = session
+    def __init__(self, db: AsyncSession) -> None:
+        self.db = db
 
-    async def create(self, db_user: User, order: OrderCreateSchema) -> Order:
-        db_order: Order = Order(
-            title=order.title,
-            description=order.description,
-            owner_id=db_user.id,
+    async def create_order(self, user: User, order_data: OrderCreateSchema) -> Order:
+        order: Order = Order(
+            user_id=user.id,
+            title=order_data.title,
+            description=order_data.description,
+
         )
 
-        self._session.add(db_order)
-        await self._session.flush()
+        self.db.add(order)
+        await self.db.flush()
 
-        return db_order
+        return order
 
-    async def get_all(self, skip: int = 0, limit: int = 100):
-        query = select(Order).offset(skip).limit(limit)
-        result = await self._session.scalars(query)
+    async def get_orders(self, skip: int = 0, limit: int = 100) -> list[Order]:
+        query: Select = select(Order).offset(skip).limit(limit)
+        result: ScalarResult[Order] = await self.db.scalars(query)
         return result.all()
 
-    async def get_all_with_owner(self, skip: int = 0, limit: int = 100):
-        query = (
+    async def get_orders_with_owner(self, skip: int = 0, limit: int = 100) -> list[Order]:
+        query: Select = (
             select(Order)
             .options(joinedload(Order.user))
             .order_by(Order.id)
             .offset(skip).limit(limit)
         )
 
-        result = await self._session.scalars(query)
+        result: ScalarResult[Order] = await self.db.scalars(query)
         return result.all()
 
-    async def get_by_id(self, order_id: int) -> Order:
-        query = select(Order).where(Order.id == order_id)
-        return await self._session.scalar(query)
+    async def get_order_by_id(self, order_id: int) -> Order | None:
+        query: Select = select(Order).where(Order.id == order_id)
+        return await self.db.scalar(query)
 
-    async def get_by_user(self, db_user: User, skip: int = 0, limit: int = 100):
-        query = select(Order).where(Order.user_id == db_user.id).offset(skip).limit(limit)
-        result = await self._session.scalars(query)
+    async def get_order_by_user(self, user: User, skip: int = 0, limit: int = 100):
+        query = select(Order).where(Order.user_id == user.id).offset(skip).limit(limit)
+        result = await self.db.scalars(query)
         return result.all()
 
     async def update_status(self, db_order: Order, status: OrderStatusEnum) -> Order:
@@ -57,7 +59,7 @@ class OrderRepository:
             raise ValueError('Недопустимый статус заказа')
 
         db_order.status = status
-        await self._session.flush()
+        await self.db.flush()
 
         logger.info(f'Статус заказа №{db_order.id} изменен на {status.value}')
 

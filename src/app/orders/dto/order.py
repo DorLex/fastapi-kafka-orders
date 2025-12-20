@@ -10,7 +10,7 @@ class OrderCreateSchema(OrderBaseSchema):
     pass
 
 
-class OrderOutSchema(OrderBaseSchema):
+class OrderResponseDTO(OrderBaseSchema):
     id: int
     status: str
     owner_id: int

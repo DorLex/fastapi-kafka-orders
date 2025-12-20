@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 # TODO: придумать авто-импорт
 from src.app.accounts.models import User  # noqa
-from src.common import settings
+from src.common import envs
 from src.common.db import Base
 from src.app.orders.models import Order  # noqa
 
@@ -18,7 +18,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option('sqlalchemy.url', settings.config.postgresql_url)
+config.set_main_option('sqlalchemy.url', settings.env_config.postgresql_url)
 
 # add your model's MetaData object here
 # for 'autogenerate' support

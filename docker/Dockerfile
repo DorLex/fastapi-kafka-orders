@@ -10,8 +10,8 @@ RUN python -m pip install -U pip &&  \
 
 WORKDIR /project
 
-COPY ../pyproject.toml ../uv.lock ./
+COPY ./pyproject.toml ./uv.lock ./
 
 RUN uv sync
 
-COPY ../ ./
+COPY ./ ./

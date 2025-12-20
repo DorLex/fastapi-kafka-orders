@@ -1,12 +1,12 @@
 from fastapi import HTTPException
 from starlette import status
 
-InvalidTokenException = HTTPException(
+InvalidTokenException: HTTPException = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
-    detail='Неверный Токен'
+    detail='Неверный Токен',
 )
 
-CredentialsException = HTTPException(
+CredentialsException: HTTPException = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
-    detail='Не удалось проверить учетные данные'
+    detail='Не удалось проверить учетные данные',
 )

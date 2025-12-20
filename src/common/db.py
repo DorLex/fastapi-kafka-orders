@@ -5,11 +5,11 @@ from sqlalchemy import BIGINT, DateTime, func
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from src.common.settings import config
+from src.common.envs import env_config
 
 async_engine: AsyncEngine = create_async_engine(
-    config.postgresql_url,
-    echo=config.sqlalchemy_echo,
+    env_config.postgresql_url,
+    echo=env_config.sqlalchemy_echo,
 )
 
 AsyncSessionMaker: async_sessionmaker[AsyncSession] = async_sessionmaker(

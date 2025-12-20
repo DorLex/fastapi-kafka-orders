@@ -22,5 +22,5 @@ async def test_registration(app: FastAPI, client: AsyncClient):
     assert response.json().get('username') == username
 
     async with SessionTest() as session:
-        db_user: User = await UserRepository(session).get_by_username(username)
+        db_user: User = await UserRepository(session).get_user_by_username(username)
         assert db_user.username == username

@@ -16,17 +16,18 @@ class UserCreateSchema(UserBaseSchema):
                     'username': 'alex',
                     'email': 'example@gmail.com',
                     'password': '123456789',
-                }
-            ]
-        }
+                },
+            ],
+        },
     )
 
 
+# TODO: не нужен?
 class UserInDBSchema(UserBaseSchema):
     hashed_password: str
 
 
-class UserOutSchema(UserBaseSchema):
+class UserResponseDTO(UserBaseSchema):
     id: int
 
     model_config = ConfigDict(from_attributes=True)

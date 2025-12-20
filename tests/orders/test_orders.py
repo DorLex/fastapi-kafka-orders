@@ -5,7 +5,7 @@ from starlette import status
 from src.app.orders.enums import OrderStatusEnum
 from src.app.orders.models import Order
 from src.app.orders.repository import OrderRepository
-from src.app.orders.routers import orders
+from src.app.orders.api import orders
 from tests.conftest import SessionTest, main_app
 from tests.orders.mocks import mock_get_producer
 
@@ -34,7 +34,7 @@ class TestOrdersPositive:
 
         order_id = response.json().get('order_id')
         async with SessionTest() as session:
-            db_order: Order = await OrderRepository(session).get_by_id(order_id)
+            db_order: Order = await OrderRepository(session).get_order_by_id(order_id)
             assert db_order.title == self.order_data.get('title')
             assert db_order.description == self.order_data.get('description')
 
