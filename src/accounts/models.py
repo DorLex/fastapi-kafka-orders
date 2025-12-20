@@ -1,7 +1,7 @@
 from sqlalchemy import String, Integer
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from src.database import Base
+from src.common.db import Base
 
 
 class UserModel(Base):
@@ -15,7 +15,7 @@ class UserModel(Base):
 
     orders: Mapped[list['OrderModel']] = relationship(
         back_populates='owner',
-        cascade='all, delete-orphan'
+        cascade='all, delete-orphan',
     )
 
     def __repr__(self) -> str:

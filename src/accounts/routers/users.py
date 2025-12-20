@@ -6,12 +6,12 @@ from src.accounts.schemas.user_with_orders import UserWithOrdersSchema
 from src.accounts.services.auth import get_current_user, verify_token
 from src.accounts.schemas.user import UserOutSchema
 from src.accounts.services.user import UserService
-from src.dependencies import get_session
+from src.__dependencies import get_session
 
 router = APIRouter(
     prefix='/users',
     tags=['users'],
-    dependencies=[Depends(verify_token)]
+    dependencies=[Depends(verify_token)],
 )
 
 

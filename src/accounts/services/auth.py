@@ -9,7 +9,7 @@ from src.accounts.schemas.token import TokenDataSchema
 from src.accounts.services.user import UserService
 from src.accounts.utils.auth import verify_password, generate_token_expire
 from src.accounts.dependencies import oauth2_scheme
-from src.dependencies import get_session
+from src.__dependencies import get_session
 
 
 def create_access_token(user: UserModel) -> str:
@@ -48,8 +48,8 @@ def verify_token(token: str = Depends(oauth2_scheme)) -> TokenDataSchema:
 
 
 async def get_current_user(
-        token_data: TokenDataSchema = Depends(verify_token),
-        session: AsyncSession = Depends(get_session)
+    token_data: TokenDataSchema = Depends(verify_token),
+    session: AsyncSession = Depends(get_session),
 ) -> UserModel:
     db_user: UserModel = await UserService(session).get_by_id(token_data.user_id)
     if not db_user:

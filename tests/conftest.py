@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from src.accounts.schemas.user import UserOutSchema
-from src.database import Base
-from src.dependencies import get_session
+from src.common.db import Base, get_db
+from src.__dependencies import get_session
 from src.main import app as main_app
 from .config import MODE, async_engine_test, SessionTest
 
@@ -31,7 +31,7 @@ async def override_get_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-main_app.dependency_overrides[get_session] = override_get_session
+main_app.dependency_overrides[get_db] = override_get_session
 
 
 @pytest.fixture(scope='session')

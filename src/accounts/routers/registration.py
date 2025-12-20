@@ -5,11 +5,11 @@ from starlette import status
 from src.accounts.models import UserModel
 from src.accounts.schemas.user import UserCreateSchema, UserOutSchema
 from src.accounts.services.user import UserService
-from src.dependencies import get_session
+from src.__dependencies import get_session
 
 router = APIRouter(
     prefix='/registration',
-    tags=['registration']
+    tags=['registration'],
 )
 
 

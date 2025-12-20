@@ -1,14 +1,13 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
-from src.config import SQLALCHEMY_DATABASE_URL
+# TODO: придумать авто-импорт
 from src.accounts.models import UserModel  # noqa
+from src.common import settings
+from src.common.db import Base
 from src.orders.models import OrderModel  # noqa
-from src.database import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -19,7 +18,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option('sqlalchemy.url', SQLALCHEMY_DATABASE_URL)
+config.set_main_option('sqlalchemy.url', settings.config.postgresql_url)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -73,7 +72,7 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, target_metadata=target_metadata,
         )
 
         with context.begin_transaction():

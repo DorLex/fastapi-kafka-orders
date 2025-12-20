@@ -4,7 +4,7 @@ from starlette import status
 
 from src.accounts.models import UserModel
 from src.accounts.services.auth import get_current_user, verify_token
-from src.dependencies import get_session
+from src.__dependencies import get_session
 from src.kafka_service.producer.producer import get_producer
 from src.orders.models import OrderModel
 from src.orders.schemas.order import OrderOutSchema, OrderCreateSchema
@@ -14,7 +14,7 @@ from src.orders.service import OrderService
 router = APIRouter(
     prefix='/orders',
     tags=['orders'],
-    dependencies=[Depends(verify_token)]
+    dependencies=[Depends(verify_token)],
 )
 
 
@@ -28,9 +28,9 @@ async def read_orders(skip: int = 0, limit: int = 100, session: AsyncSession = D
 
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=dict[str, int | str])
 async def add_order(
-        order: OrderCreateSchema,
-        current_user: UserModel = Depends(get_current_user),
-        session: AsyncSession = Depends(get_session)
+    order: OrderCreateSchema,
+    current_user: UserModel = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
 ):
     """Добавить заказ"""
 
@@ -48,10 +48,10 @@ async def add_order(
 
 @router.get('/my/', response_model=list[OrderOutSchema])
 async def read_my_orders(
-        skip: int = 0,
-        limit: int = 100,
-        current_user: UserModel = Depends(get_current_user),
-        session: AsyncSession = Depends(get_session)
+    skip: int = 0,
+    limit: int = 100,
+    current_user: UserModel = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
 ):
     """Показать заказы текущего пользователя"""
 

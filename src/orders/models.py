@@ -2,7 +2,7 @@ from sqlalchemy import String, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from src.database import Base
+from src.common.db import Base
 from src.orders.enums import OrderStatusEnum
 
 
@@ -15,7 +15,7 @@ class OrderModel(Base):
     status: Mapped[OrderStatusEnum] = mapped_column(
         ENUM(OrderStatusEnum, name='order_status_enum'),
         nullable=False,
-        default=OrderStatusEnum.created
+        default=OrderStatusEnum.created,
     )
 
     description: Mapped[str] = mapped_column(String)
@@ -23,7 +23,7 @@ class OrderModel(Base):
     owner_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     owner: Mapped['UserModel'] = relationship(
         back_populates='orders',
-        lazy='joined'
+        lazy='joined',
     )
 
     def __repr__(self) -> str:

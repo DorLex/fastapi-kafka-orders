@@ -9,18 +9,18 @@ from src.accounts.models import UserModel
 from src.accounts.services.auth import authenticate_user, create_access_token
 from src.accounts.schemas.token import TokenSchema
 from src.accounts.services.user import UserService
-from src.dependencies import get_session
+from src.__dependencies import get_session
 
 router = APIRouter(
     prefix='/auth',
-    tags=['auth']
+    tags=['auth'],
 )
 
 
 @router.post('/token/', response_model=TokenSchema)
 async def login_by_access_token(
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        session: AsyncSession = Depends(get_session)
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    session: AsyncSession = Depends(get_session),
 ):
     """Авторизация"""
 
@@ -32,7 +32,7 @@ async def login_by_access_token(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Неверное имя пользователя или пароль',
-            headers={'WWW-Authenticate': 'Bearer'}
+            headers={'WWW-Authenticate': 'Bearer'},
         )
 
     access_token = create_access_token(auth_user)

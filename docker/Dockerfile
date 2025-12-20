@@ -1,18 +1,17 @@
-FROM python:3.11.8-slim-bookworm
+FROM python:3.13.11-slim-bookworm
 
+# UV_PROJECT_ENVIRONMENT=/usr/local - установка зависимостей в глобаное окружение
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_PROJECT_ENVIRONMENT=/usr/local
 
 RUN python -m pip install -U pip &&  \
-    python -m pip install poetry && \
-    poetry config virtualenvs.create false
+    python -m pip install uv
 
 WORKDIR /project
 
-COPY ../poetry.lock ../pyproject.toml ./
+COPY ../pyproject.toml ../uv.lock ./
 
-RUN poetry install
+RUN uv sync
 
 COPY ../ ./
-
-EXPOSE 8000
