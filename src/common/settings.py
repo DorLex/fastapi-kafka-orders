@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     postgres_host: str
     postgres_port: int
 
+    # Kafka
+    kafka_host: str
+    kafka_port: int
+
     @property
     def postgresql_url(self) -> str:
         return (
@@ -24,6 +28,10 @@ class Settings(BaseSettings):
             f'{self.postgres_port}/'
             f'{self.postgres_db}'
         )
+
+    @property
+    def kafka_bootstrap_servers(self) -> str:
+        return f'{self.kafka_host}:{self.kafka_port}'
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / '.env',

@@ -6,10 +6,10 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.accounts.schemas.user import UserOutSchema
+from src.app.accounts.schemas import UserOutSchema
 from src.common.db import Base, get_db
 from src.__dependencies import get_session
-from src.main import app as main_app
+from src.app.main import app as main_app
 from .config import MODE, async_engine_test, SessionTest
 
 

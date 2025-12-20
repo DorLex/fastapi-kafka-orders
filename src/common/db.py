@@ -1,7 +1,9 @@
 from collections.abc import AsyncGenerator
+from datetime import datetime
 
+from sqlalchemy import BIGINT, DateTime, func
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from src.common.settings import config
 
@@ -23,4 +25,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 class Base(DeclarativeBase):
-    pass
+    id: Mapped[int] = mapped_column(BIGINT, primary_key=True, autoincrement=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

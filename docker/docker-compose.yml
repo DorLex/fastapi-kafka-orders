@@ -1,25 +1,27 @@
 name: "fastapi-kafka"
 
 services:
-  orders_app:
+  app:
     build:
       context: ../
       dockerfile: docker/Dockerfile
-#    env_file:
-#      - .env
-#    volumes:
-#      - ../logs/orders_app:/project/logs
+    #    env_file:
+    #      - .env
+    #    volumes:
+    #      - ../logs/orders_app:/project/logs
     ports:
       - "8000:8000"
-#    depends_on:
-#      - postgres
-#      - kafka
-#    entrypoint: [ "docker/wait-for-it.sh", "${KAFKA_HOST}:${KAFKA_PORT}", "--" ]
+    #    depends_on:
+    #      - postgres
+    #      - kafka
+    #    entrypoint: [ "docker/wait-for-it.sh", "${KAFKA_HOST}:${KAFKA_PORT}", "--" ]
     command: "uvicorn src.main:app --host 0.0.0.0 --port 8000"
 #    command: "uv run uvicorn src.main:app --host 0.0.0.0 --port 8000"
 
 
+
 #  order_worker:
+# TODO: использовать app-image
 #    build:
 #      context: ../
 #      dockerfile: docker/Dockerfile
