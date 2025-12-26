@@ -4,10 +4,9 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 # TODO: придумать авто-импорт
-from src.app.accounts.models import User  # noqa
-from src.common import envs
+from src.app.dal.accounts.models.user import User  # noqa
 from src.common.db import Base
-from src.app.orders.models import Order  # noqa
+from src.app.dal.orders.models.order import Order  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

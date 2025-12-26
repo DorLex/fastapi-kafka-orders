@@ -1,8 +1,8 @@
-from src.app.accounts.models import User
-from src.app.orders.dto.order import OrderCreateSchema
-from src.app.orders.enums import OrderStatusEnum
-from src.app.orders.models import Order
-from src.app.orders.repository import OrderRepository
+from src.app.dal.accounts.models.user import User
+from src.app.bll.orders.dto.order import OrderCreateSchema
+from src.common.constants.order import OrderStatusEnum
+from src.app.dal.orders.models.order import Order
+from src.app.dal.orders.repositories.order import OrderRepository
 
 
 class OrderService:

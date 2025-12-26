@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from src.app.accounts.api import auth, registration, users
-from src.app.orders.api import orders
+from src.app.api.accounts import auth, registration, users
+from src.app.api.orders import orders
 
 app: FastAPI = FastAPI(title='Orders-App')
 

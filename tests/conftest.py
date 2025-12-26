@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.app.accounts.dto import UserOutSchema
+from src.app.bll.accounts.dto import UserOutSchema
 from src.common.db import Base, get_db
 from src.__dependencies import get_session
 from src.app.main import app as main_app

@@ -6,14 +6,14 @@ from fastapi import Depends
 from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.accounts.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
-from src.app.accounts.dependencies import oauth2_scheme
-from src.app.accounts.dto.token import TokenDTO
-from src.app.accounts.exceptions import CredentialsException, InvalidTokenException
-from src.app.accounts.models import User
-from src.app.accounts.repositories.user import UserRepository
-from src.app.accounts.services.user import UserService
-from src.app.accounts.utils.auth import generate_token_expire, verify_password
+from src.app._accounts.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
+from src.app._accounts.dependencies import oauth2_scheme
+from src.app.bll.accounts.dto import TokenDTO
+from src.common.exceptions.auth import CredentialsException, InvalidTokenException
+from src.app.dal.accounts.models.user import User
+from src.app.dal.accounts.repositories.user import UserRepository
+from src.app.bll.accounts.services.user import UserService
+from src.app.bll.accounts.utils.auth import generate_token_expire, verify_password
 from src.common.db import get_db
 
 logger: Logger = getLogger(__name__)

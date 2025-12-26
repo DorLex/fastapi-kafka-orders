@@ -1,9 +1,9 @@
 from fastapi import HTTPException
 from starlette import status
 
-from src.app.accounts.dto.user import UserCreateSchema
-from src.app.accounts.models import User
-from src.app.accounts.repositories.user import UserRepository
+from src.app.bll.accounts.dto import UserCreateSchema
+from src.app.dal.accounts.models.user import User
+from src.app.dal.accounts.repositories.user import UserRepository
 
 
 class UserService:

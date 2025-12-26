@@ -3,13 +3,13 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.app.accounts.models import User
-from src.app.accounts.services.auth import get_current_user, verify_token
-from src.app.orders.dto.order import OrderCreateSchema, OrderResponseDTO
-from src.app.orders.dto.order_with_owner import OrderWithOwnerSchema
-from src.app.orders.models import Order
-from src.app.orders.repository import OrderRepository
-from src.app.orders.service import OrderService
+from src.app.dal.accounts.models.user import User
+from src.app.bll.accounts.services.auth import get_current_user, verify_token
+from src.app.bll.orders.dto.order import OrderCreateSchema, OrderResponseDTO
+from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerSchema
+from src.app.dal.orders.models.order import Order
+from src.app.dal.orders.repositories.order import OrderRepository
+from src.app.bll.orders.services.order import OrderService
 from src.common.db import get_db
 from src.common.kafka_layer.producer.producer import get_producer
 
@@ -40,7 +40,7 @@ async def get_orders(
     status_code=status.HTTP_201_CREATED,
     response_model=dict,
 )
-async def add_order(
+async def create_order(
     order: OrderCreateSchema,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

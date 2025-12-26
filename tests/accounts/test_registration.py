@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette import status
 
-from src.app.accounts.models import User
-from src.app.accounts.repositories.user import UserRepository
+from src.app.dal.accounts.models.user import User
+from src.app.dal.accounts.repositories.user import UserRepository
 from tests.conftest import SessionTest
 
 

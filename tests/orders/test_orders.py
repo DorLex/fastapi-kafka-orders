@@ -2,10 +2,10 @@ import pytest
 from httpx import AsyncClient
 from starlette import status
 
-from src.app.orders.enums import OrderStatusEnum
-from src.app.orders.models import Order
-from src.app.orders.repository import OrderRepository
-from src.app.orders.api import orders
+from src.common.constants.order import OrderStatusEnum
+from src.app.dal.orders.models.order import Order
+from src.app.dal.orders.repositories.order import OrderRepository
+from src.app.api.orders import orders
 from tests.conftest import SessionTest, main_app
 from tests.orders.mocks import mock_get_producer
 

@@ -5,11 +5,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.app.accounts.models import User
-from src.app.accounts.repositories.user import UserRepository
-from src.app.accounts.dto.token import TokenResponseDTO
-from src.app.accounts.services.auth import check_credentials, create_access_token
-from src.app.accounts.services.user import UserService
+from src.app.dal.accounts.models.user import User
+from src.app.dal.accounts.repositories.user import UserRepository
+from src.app.bll.accounts.dto.token import TokenResponseDTO
+from src.app.bll.accounts.services.auth import check_credentials, create_access_token
+from src.app.bll.accounts.services.user import UserService
 from src.common.db import get_db
 
 router: APIRouter = APIRouter(

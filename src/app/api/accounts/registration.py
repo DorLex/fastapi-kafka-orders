@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.app.accounts.models import User
-from src.app.accounts.dto.user import UserCreateSchema, UserResponseDTO
-from src.app.accounts.services.user import UserService
+from src.app.dal.accounts.models.user import User
+from src.app.bll.accounts.dto.user import UserCreateSchema, UserResponseDTO
+from src.app.bll.accounts.services.user import UserService
 from src.common.db import get_db
 
 router: APIRouter = APIRouter(

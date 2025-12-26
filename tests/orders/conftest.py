@@ -1,8 +1,8 @@
 import pytest
 
-from src.app.orders.models import Order
-from src.app.orders.repository import OrderRepository
-from src.app.orders.dto.order import OrderCreateSchema
+from src.app.dal.orders.models.order import Order
+from src.app.dal.orders.repositories.order import OrderRepository
+from src.app.bll.orders.dto.order import OrderCreateSchema
 from tests.conftest import SessionTest
 
 

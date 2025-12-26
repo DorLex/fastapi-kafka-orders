@@ -1,6 +1,6 @@
 from datetime import datetime, timezone, timedelta
 
-from src.app.accounts.config import pwd_context
+from src.app._accounts.config import pwd_context
 
 
 def get_password_hash(password: str) -> str:

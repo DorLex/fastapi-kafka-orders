@@ -2,9 +2,9 @@ from sqlalchemy import ScalarResult, select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from src.app.accounts.dto.user import UserCreateSchema
-from src.app.accounts.models import User
-from src.app.accounts.utils.auth import get_password_hash
+from src.app.bll.accounts.dto import UserCreateSchema
+from src.app.dal.accounts.models.user import User
+from src.app.bll.accounts.utils.auth import get_password_hash
 
 
 class UserRepository:
