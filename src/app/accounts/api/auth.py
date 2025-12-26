@@ -23,12 +23,12 @@ async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: AsyncSession = Depends(get_db),
 ) -> TokenResponseDTO:
-    """Авторизация"""
+    """Авторизация."""
 
     user_service: UserService = UserService(UserRepository(db))
     user: User = await user_service.get_user_by_username(form_data.username)
 
-    # TODO: убрать это в UserService
+    # TODO: убрать это в UserService или в AuthService
     valid_credentials: bool = check_credentials(user, form_data.password)
     if not valid_credentials:
         raise HTTPException(
