@@ -7,6 +7,7 @@ from src.common.db import Base
 class User(Base):
     __tablename__: str = 'user'
 
+    # TODO: сделать более явную парную уникальность?
     username: Mapped[str] = mapped_column(Text, unique=True)
     email: Mapped[str] = mapped_column(Text, unique=True)
     hashed_password: Mapped[str] = mapped_column(Text)

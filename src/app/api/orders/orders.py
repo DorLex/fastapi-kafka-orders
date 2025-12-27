@@ -3,25 +3,25 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.app.dal.accounts.models.user import User
 from src.app.bll.accounts.services.auth import AuthService, get_current_user
 from src.app.bll.orders.dto.order import OrderCreateSchema, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
+from src.app.bll.orders.services.order import OrderService
+from src.app.dal.accounts.models.user import User
 from src.app.dal.orders.models.order import Order
 from src.app.dal.orders.repositories.order import OrderRepository
-from src.app.bll.orders.services.order import OrderService
 from src.common.db import get_db
 from src.common.kafka_layer.producer.producer import get_producer
 
 router: APIRouter = APIRouter(
     prefix='/orders',
-    tags=['orders'],
+    tags=['Orders'],
     dependencies=[Depends(AuthService.verify_token)],
 )
 
 
 @router.get(
-    '/',
+    '',
     response_model=list[OrderResponseDTO],
 )
 async def get_orders(
@@ -36,7 +36,7 @@ async def get_orders(
 
 
 @router.post(
-    '/',
+    '',
     status_code=status.HTTP_201_CREATED,
     response_model=dict,
 )
@@ -64,7 +64,7 @@ async def create_order(
 
 
 @router.get(
-    '/my/',
+    '/my',
     response_model=list[OrderResponseDTO],
 )
 async def get_my_orders(
@@ -80,11 +80,11 @@ async def get_my_orders(
 
 
 @router.get(
-    '/with-owner/',
+    '/with-owner',
     response_model=list[OrderWithOwnerDTO],
 )
 async def get_orders_with_owner(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)) -> list[Order]:
-    """Получить заказы с владельцем"""
+    """Получить заказы с владельцем."""
 
     order_service: OrderService = OrderService(OrderRepository(db))
     return await order_service.get_orders_with_owner(skip, limit)

@@ -11,7 +11,10 @@ class UserService:
         self.repository = repository
 
     async def create_user(self, user_data: UserCreateSchema):
-        check_user_registered = await self.get_users_filter_by(username=user_data.username, email=user_data.email)
+        check_user_registered: list[User] = await self.get_users_filter_by(
+            username=user_data.username,
+            email=user_data.email,
+        )
         if check_user_registered:
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST,
