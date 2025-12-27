@@ -3,7 +3,7 @@ import pytest
 from src.app.dal.orders.models.order import Order
 from src.app.dal.orders.repositories.order import OrderRepository
 from src.app.bll.orders.dto.order import OrderCreateSchema
-from tests.conftest import SessionTest
+from src.tests.conftest import SessionTest
 
 
 @pytest.fixture(scope='session')

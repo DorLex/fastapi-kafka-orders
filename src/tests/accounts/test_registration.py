@@ -4,7 +4,7 @@ from starlette import status
 
 from src.app.dal.accounts.models.user import User
 from src.app.dal.accounts.repositories.user import UserRepository
-from tests.conftest import SessionTest
+from src.tests.conftest import SessionTest
 
 
 async def test_registration(app: FastAPI, client: AsyncClient):

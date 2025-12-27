@@ -6,8 +6,8 @@ from src.common.constants.order import OrderStatusEnum
 from src.app.dal.orders.models.order import Order
 from src.app.dal.orders.repositories.order import OrderRepository
 from src.app.api.orders import orders
-from tests.conftest import SessionTest, main_app
-from tests.orders.mocks import mock_get_producer
+from src.tests.conftest import SessionTest, main_app
+from src.tests.orders.mocks import mock_get_producer
 
 
 class TestOrdersPositive:
