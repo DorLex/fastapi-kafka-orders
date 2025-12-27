@@ -10,7 +10,7 @@ class UserService:
     def __init__(self, repository: UserRepository) -> None:
         self.repository = repository
 
-    async def registration(self, user_data: UserCreateSchema):
+    async def create_user(self, user_data: UserCreateSchema):
         check_user_registered = await self.get_users_filter_by(username=user_data.username, email=user_data.email)
         if check_user_registered:
             raise HTTPException(
@@ -28,9 +28,6 @@ class UserService:
 
     async def get_users_filter_by(self, **filters) -> list[User]:
         return await self.repository.get_users_filter_by(**filters)
-
-    # async def get_user_by_username(self, username: str) -> User:
-    #     return await self.repository.get_user_by_username(username)
 
     async def get_user_by_id(self, user_id: int) -> User:
         return await self.repository.get_user_by_id(user_id)

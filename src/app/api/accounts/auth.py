@@ -9,11 +9,11 @@ from src.common.db import get_db
 
 router: APIRouter = APIRouter(
     prefix='/auth',
-    tags=['auth'],
+    tags=['Auth'],
 )
 
 
-@router.post('/token/', response_model=TokenResponseDTO)
+@router.post('/token', response_model=TokenResponseDTO)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
