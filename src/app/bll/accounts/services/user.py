@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from starlette import status
 
-from src.app.bll.accounts.dto import UserCreateSchema
+from src.app.bll.accounts.dto.user import UserCreateSchema
 from src.app.dal.accounts.models.user import User
 from src.app.dal.accounts.repositories.user import UserRepository
 
@@ -29,8 +29,8 @@ class UserService:
     async def get_users_filter_by(self, **filters) -> list[User]:
         return await self.repository.get_users_filter_by(**filters)
 
-    async def get_user_by_username(self, username: str) -> User:
-        return await self.repository.get_user_by_username(username)
+    # async def get_user_by_username(self, username: str) -> User:
+    #     return await self.repository.get_user_by_username(username)
 
     async def get_user_by_id(self, user_id: int) -> User:
         return await self.repository.get_user_by_id(user_id)

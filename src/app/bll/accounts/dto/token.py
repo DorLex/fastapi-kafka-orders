@@ -6,5 +6,5 @@ class TokenResponseDTO(BaseModel):
 
 
 class TokenDTO(BaseModel):
-    user_id: int | None = None
-    username: str | None = None
+    user_id: int
+    username: str

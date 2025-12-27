@@ -1,18 +1,18 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.dal.accounts.models.user import User
-from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
-from src.app.dal.accounts.repositories.user import UserRepository
-from src.app.bll.accounts.services.auth import get_current_user, verify_token
 from src.app.bll.accounts.dto.user import UserResponseDTO
+from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
+from src.app.bll.accounts.services.auth import AuthService, get_current_user
 from src.app.bll.accounts.services.user import UserService
+from src.app.dal.accounts.models.user import User
+from src.app.dal.accounts.repositories.user import UserRepository
 from src.common.db import get_db
 
 router: APIRouter = APIRouter(
     prefix='/users',
     tags=['Users'],
-    dependencies=[Depends(verify_token)],
+    dependencies=[Depends(AuthService.verify_token)],
 )
 
 
