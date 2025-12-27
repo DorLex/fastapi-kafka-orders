@@ -1,4 +1,7 @@
-from src.app._accounts.config import pwd_context
+from passlib.context import CryptContext
+
+# TODO: куда положить этот объект?
+pwd_context: CryptContext = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
 class PasswordService:

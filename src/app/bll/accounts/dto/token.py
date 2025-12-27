@@ -5,6 +5,6 @@ class TokenResponseDTO(BaseModel):
     access_token: str
 
 
-class TokenDTO(BaseModel):
+class TokenPayloadDTO(BaseModel):
     user_id: int
     username: str

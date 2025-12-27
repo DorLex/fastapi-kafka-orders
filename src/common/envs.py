@@ -6,6 +6,8 @@ from src.common.constants.paths import BASE_DIR
 class EnvConfig(BaseSettings):
     # Backend
     sqlalchemy_echo: bool = True
+    jwt_secret_key: str
+    jwt_expiration_minutes: int = 30
 
     # Database
     postgres_user: str

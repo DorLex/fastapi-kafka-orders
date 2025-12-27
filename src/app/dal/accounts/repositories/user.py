@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from src.app.bll.accounts.dto.user import UserCreateSchema
-from src.app.bll.accounts.utils.auth import PasswordService
+from src.app.bll.accounts.services.password import PasswordService
 from src.app.dal.accounts.models.user import User
 
 

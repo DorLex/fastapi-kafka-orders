@@ -6,7 +6,7 @@ from starlette import status
 from src.app.dal.accounts.models.user import User
 from src.app.bll.accounts.services.auth import AuthService, get_current_user
 from src.app.bll.orders.dto.order import OrderCreateSchema, OrderResponseDTO
-from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerSchema
+from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.dal.orders.models.order import Order
 from src.app.dal.orders.repositories.order import OrderRepository
 from src.app.bll.orders.services.order import OrderService
@@ -81,7 +81,7 @@ async def get_my_orders(
 
 @router.get(
     '/with-owner/',
-    response_model=list[OrderWithOwnerSchema],
+    response_model=list[OrderWithOwnerDTO],
 )
 async def get_orders_with_owner(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)) -> list[Order]:
     """Получить заказы с владельцем"""
