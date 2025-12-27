@@ -19,31 +19,33 @@ services:
 
 
 
-#  order_worker:
-# TODO: использовать app-image
-#    build:
-#      context: ../
-#      dockerfile: docker/Dockerfile
-#    env_file:
-#      - .env
-##    volumes:
-##      - ../logs/order_worker:/project/logs
-#    depends_on:
-#      - postgres
-#      - kafka
-#    entrypoint: [ "docker/wait-for-it.sh", "${KAFKA_HOST}:${KAFKA_PORT}", "--" ]
-#    command: "python -m src.run_consumer"
-#
-#  postgres:
-#    image: postgres:15.5-alpine3.19
-#    env_file:
-#      - .env
-#    restart: unless-stopped
-#    ports:
-#      - "${POSTGRES_PORT}:5432"
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data/
-#
+  #  order_worker:
+  # TODO: использовать app-image
+  #    build:
+  #      context: ../
+  #      dockerfile: docker/Dockerfile
+  #    env_file:
+  #      - .env
+  ##    volumes:
+  ##      - ../logs/order_worker:/project/logs
+  #    depends_on:
+  #      - postgres
+  #      - kafka
+  #    entrypoint: [ "docker/wait-for-it.sh", "${KAFKA_HOST}:${KAFKA_PORT}", "--" ]
+  #    command: "python -m src.run_consumer"
+
+  postgres:
+    image: postgres:17.7-alpine3.23
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+
 #  kafka:
 #    image: bitnami/kafka:3.6.1-debian-12-r12
 #    env_file:
@@ -63,7 +65,8 @@ services:
 #      - "8080:8080"
 #    depends_on:
 #      - kafka
-#
-#
-#volumes:
-#  postgres_data:
+
+
+
+volumes:
+  postgres_data:
