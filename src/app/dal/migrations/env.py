@@ -1,5 +1,11 @@
 import asyncio
+import importlib
+import logging
+import pkgutil
+from pkgutil import ModuleInfo
+from logging import getLogger, INFO, Logger
 from logging.config import fileConfig
+from pathlib import Path
 
 from alembic import context
 from alembic.config import Config
@@ -7,8 +13,60 @@ from sqlalchemy import MetaData, pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from src.common.constants.paths import BASE_DIR
 from src.common.db import Base
 from src.common.envs import env_config
+
+logging.basicConfig(level=INFO)
+logger: Logger = getLogger(__name__)
+
+
+def auto_import_models():
+    dal_path: Path = BASE_DIR / 'src/app/dal'
+
+    for models_dir in dal_path.rglob('models'):  # рекурсивный поиск файлов и директорий по шаблону
+        if not models_dir.is_dir() or '__pycache__' in str(models_dir):
+            continue
+
+        models_dir_relative_path: Path = models_dir.relative_to(BASE_DIR)  # src/app/dal/accounts/models
+        models_package_path: str = '.'.join(models_dir_relative_path.parts)  # src.app.dal.accounts.models
+
+        logger.info(f'- Сканируем пакет: {models_package_path}')
+
+        # # Импортируем сам пакет models
+        # try:
+        #     importlib.import_module(models_package_path)
+        #     logger.info(f'-- Пакет загружен')
+        # except Exception as exc:
+        #     logger.error(f'-- Ошибка загрузки пакета: {exc}')
+        #     continue
+
+        # Сканируем все модули внутри пакета models
+        for finder, module_name, is_pkg in pkgutil.iter_modules([str(models_dir)]):
+            if module_name == '__init__' or is_pkg:
+                continue
+
+            full_module_path = f"{models_package_path}.{module_name}"
+
+            try:
+                # Импортируем модуль с моделью
+                module = importlib.import_module(full_module_path)
+                logger.info(f"    📄 Загружен модуль: {module_name}")
+
+                # Дополнительно: можно найти все классы моделей в модуле
+                for attr_name in dir(module):
+                    attr = getattr(module, attr_name)
+                    if hasattr(attr, '__table__'):  # Проверяем, что это модель SQLAlchemy
+                        logger.info(f"      🎯 Найдена модель: {attr_name}")
+
+            except ImportError as e:
+                # Игнорируем ошибки импорта, если модуль требует зависимостей
+                logger.info(f"    ⚠️ Не удалось загрузить {module_name}: {e}")
+            except Exception as e:
+                logger.info(f"    ❌ Ошибка в модуле {module_name}: {e}")
+
+
+auto_import_models()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
