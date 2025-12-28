@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 
-from src.app.api.accounts import auth, users
-from src.app.api.orders import orders
+from src.app.api.v1 import api_v1_router
 
 app: FastAPI = FastAPI(title='Orders-App')
 
-app.include_router(users.router)
-app.include_router(orders.router)
-app.include_router(auth.router)
+app.include_router(api_v1_router)

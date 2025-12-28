@@ -1,5 +1,5 @@
 server:
-	uvicorn src.main:app --reload
+	uvicorn src.app.main:app --reload
 
 order_worker:
 	python -m src.run_consumer
