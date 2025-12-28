@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.app.bll.accounts.dto.token import TokenResponseDTO
 from src.app.bll.accounts.services.auth import AuthService
 from src.app.dal.accounts.repositories.user import UserRepository
-from src.common.db import get_db
+from src.common.db.objs import get_db
 
 router: APIRouter = APIRouter(
     prefix='/auth',

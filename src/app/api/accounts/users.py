@@ -8,7 +8,7 @@ from src.app.bll.accounts.services.auth import AuthService, get_current_user
 from src.app.bll.accounts.services.user import UserService
 from src.app.dal.accounts.models.user import User
 from src.app.dal.accounts.repositories.user import UserRepository
-from src.common.db import get_db
+from src.common.db.objs import get_db
 
 router: APIRouter = APIRouter(
     prefix='/users',

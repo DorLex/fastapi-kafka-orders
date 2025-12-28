@@ -18,7 +18,7 @@ from src.app.bll.accounts.services.user import UserService
 from src.app.dal.accounts.models.user import User
 from src.app.dal.accounts.repositories.user import UserRepository
 from src.common.constants.auth import JWT_ALGORITHM
-from src.common.db import get_db
+from src.common.db.objs import get_db
 from src.common.envs import env_config
 
 logger: Logger = getLogger(__name__)

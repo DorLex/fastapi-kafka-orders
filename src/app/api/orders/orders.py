@@ -10,7 +10,7 @@ from src.app.bll.orders.services.order import OrderService
 from src.app.dal.accounts.models.user import User
 from src.app.dal.orders.models.order import Order
 from src.app.dal.orders.repositories.order import OrderRepository
-from src.common.db import get_db
+from src.common.db.objs import get_db
 from src.common.kafka_layer.producer.producer import get_producer
 
 router: APIRouter = APIRouter(

@@ -1,7 +1,7 @@
-from sqlalchemy import BIGINT, String, Integer, Text
+from sqlalchemy import Text
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from src.common.db import Base
+from src.common.db.objs import Base
 
 
 class User(Base):

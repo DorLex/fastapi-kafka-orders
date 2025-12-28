@@ -1,13 +1,7 @@
 import asyncio
-import importlib
 import logging
-import pkgutil
-from logging import getLogger, INFO, Logger
+from logging import INFO
 from logging.config import fileConfig
-from pathlib import Path
-from pkgutil import ModuleInfo
-from types import ModuleType
-from typing import Any
 
 from alembic import context
 from alembic.config import Config
@@ -15,54 +9,13 @@ from sqlalchemy import MetaData, pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from src.common.constants.paths import BASE_DIR
-from src.common.db import Base
+from src.common.db.model_import import ModelAutoImporter
+from src.common.db.objs import Base
 from src.common.envs import env_config
 
 logging.basicConfig(level=INFO)
-logger: Logger = getLogger(__name__)
 
-
-def auto_import_models():
-    """
-    Автоматически импортирует все SQLAlchemy-модели, чтобы их видел Alembic.
-    """
-
-    dal_path: Path = BASE_DIR / 'src/app/dal'
-
-    for models_dir in dal_path.rglob('models'):  # рекурсивный поиск файлов и директорий по шаблону
-        models_dir: Path
-
-        if not models_dir.is_dir() or '__pycache__' in str(models_dir):
-            continue
-
-        _models_dir_relative_path: Path = models_dir.relative_to(BASE_DIR)  # src/app/dal/accounts/models
-        models_package_path: str = '.'.join(_models_dir_relative_path.parts)  # src.app.dal.accounts.models
-
-        for module_info in pkgutil.iter_modules([str(models_dir)]):
-            module_info: ModuleInfo
-
-            if module_info.name == '__init__' or module_info.ispkg:
-                continue
-
-            full_module_path: str = f'{models_package_path}.{module_info.name}'
-
-            try:
-                module: ModuleType = importlib.import_module(full_module_path)
-                logger.info(f'- Импортирован модуль: {full_module_path}')
-
-                for module_attr_name in dir(module):
-                    module_attr: Any = getattr(module, module_attr_name)
-
-                    if hasattr(module_attr, '__table__'):  # если это модель SQLAlchemy
-                        logger.info(f'-- Импортирована модель: {module_attr_name}')
-
-            except Exception as exc:
-                logger.error(f'-- Ошибка при импорте модуля {full_module_path}: {exc}')
-                raise exc
-
-
-auto_import_models()
+ModelAutoImporter.import_models()  # авто-импорт всех SQLAlchemy-моделей
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
