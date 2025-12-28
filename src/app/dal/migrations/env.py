@@ -2,10 +2,12 @@ import asyncio
 import importlib
 import logging
 import pkgutil
-from pkgutil import ModuleInfo
 from logging import getLogger, INFO, Logger
 from logging.config import fileConfig
 from pathlib import Path
+from pkgutil import ModuleInfo
+from types import ModuleType
+from typing import Any
 
 from alembic import context
 from alembic.config import Config
@@ -22,48 +24,42 @@ logger: Logger = getLogger(__name__)
 
 
 def auto_import_models():
+    """
+    Автоматически импортирует все SQLAlchemy-модели, чтобы их видел Alembic.
+    """
+
     dal_path: Path = BASE_DIR / 'src/app/dal'
 
     for models_dir in dal_path.rglob('models'):  # рекурсивный поиск файлов и директорий по шаблону
+        models_dir: Path
+
         if not models_dir.is_dir() or '__pycache__' in str(models_dir):
             continue
 
-        models_dir_relative_path: Path = models_dir.relative_to(BASE_DIR)  # src/app/dal/accounts/models
-        models_package_path: str = '.'.join(models_dir_relative_path.parts)  # src.app.dal.accounts.models
+        _models_dir_relative_path: Path = models_dir.relative_to(BASE_DIR)  # src/app/dal/accounts/models
+        models_package_path: str = '.'.join(_models_dir_relative_path.parts)  # src.app.dal.accounts.models
 
-        logger.info(f'- Сканируем пакет: {models_package_path}')
+        for module_info in pkgutil.iter_modules([str(models_dir)]):
+            module_info: ModuleInfo
 
-        # # Импортируем сам пакет models
-        # try:
-        #     importlib.import_module(models_package_path)
-        #     logger.info(f'-- Пакет загружен')
-        # except Exception as exc:
-        #     logger.error(f'-- Ошибка загрузки пакета: {exc}')
-        #     continue
-
-        # Сканируем все модули внутри пакета models
-        for finder, module_name, is_pkg in pkgutil.iter_modules([str(models_dir)]):
-            if module_name == '__init__' or is_pkg:
+            if module_info.name == '__init__' or module_info.ispkg:
                 continue
 
-            full_module_path = f"{models_package_path}.{module_name}"
+            full_module_path: str = f'{models_package_path}.{module_info.name}'
 
             try:
-                # Импортируем модуль с моделью
-                module = importlib.import_module(full_module_path)
-                logger.info(f"    📄 Загружен модуль: {module_name}")
+                module: ModuleType = importlib.import_module(full_module_path)
+                logger.info(f'- Импортирован модуль: {full_module_path}')
 
-                # Дополнительно: можно найти все классы моделей в модуле
-                for attr_name in dir(module):
-                    attr = getattr(module, attr_name)
-                    if hasattr(attr, '__table__'):  # Проверяем, что это модель SQLAlchemy
-                        logger.info(f"      🎯 Найдена модель: {attr_name}")
+                for module_attr_name in dir(module):
+                    module_attr: Any = getattr(module, module_attr_name)
 
-            except ImportError as e:
-                # Игнорируем ошибки импорта, если модуль требует зависимостей
-                logger.info(f"    ⚠️ Не удалось загрузить {module_name}: {e}")
-            except Exception as e:
-                logger.info(f"    ❌ Ошибка в модуле {module_name}: {e}")
+                    if hasattr(module_attr, '__table__'):  # если это модель SQLAlchemy
+                        logger.info(f'-- Импортирована модель: {module_attr_name}')
+
+            except Exception as exc:
+                logger.error(f'-- Ошибка при импорте модуля {full_module_path}: {exc}')
+                raise exc
 
 
 auto_import_models()
