@@ -1,24 +1,24 @@
 from logging import getLogger, Logger
 
-import bcrypt
+from argon2 import PasswordHasher
 
 logger: Logger = getLogger(__name__)
 
+password_hasher: PasswordHasher = PasswordHasher()
+
 
 class PasswordService:
-    @classmethod
-    def generate_password_hash(cls, raw_password: str) -> str:
-        hashed_password: bytes = bcrypt.hashpw(raw_password.encode('utf-8'), bcrypt.gensalt())
-        return hashed_password.decode('utf-8')
+    @staticmethod
+    def generate_password_hash(raw_password: str) -> str:
+        hashed_password: str = password_hasher.hash(raw_password)
+        return hashed_password
 
-    @classmethod
-    def verify_password(cls, raw_password: str, hashed_password: str) -> bool:
+    @staticmethod
+    def verify_password(raw_password: str, hashed_password: str) -> bool:
         try:
-            return bcrypt.checkpw(
-                raw_password.encode('utf-8'),
-                hashed_password.encode('utf-8'),
-            )
+            is_password_valid: bool = password_hasher.verify(hashed_password, raw_password)
+            return is_password_valid
         except Exception as exc:
-            logger.warning(f'Ошибка при валидации пароля: {exc}')
+            logger.warning(f'Ошибка при валидации пароля: "{exc}"')
 
         return False
