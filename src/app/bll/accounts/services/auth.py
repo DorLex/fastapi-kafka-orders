@@ -49,7 +49,7 @@ class AuthService:
         return TokenResponseDTO(access_token=encoded_jwt)
 
     @staticmethod
-    def verify_token(token: str = Depends(oauth2_scheme)) -> TokenPayloadDTO:
+    def decode_token(token: str = Depends(oauth2_scheme)) -> TokenPayloadDTO:
         try:
             payload: dict[str, Any] = jwt.decode(token, env_config.jwt_secret_key, algorithms=[JWT_ALGORITHM])
 
@@ -67,7 +67,7 @@ class AuthService:
 
 
 async def get_current_user(
-    token_data: TokenPayloadDTO = Depends(AuthService.verify_token),
+    token_data: TokenPayloadDTO = Depends(AuthService.decode_token),
     db: AsyncSession = Depends(get_db),
 ) -> User:
     user_service: UserService = UserService(UserRepository(db))

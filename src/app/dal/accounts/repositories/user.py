@@ -2,7 +2,7 @@ from sqlalchemy import ScalarResult, select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from src.app.bll.accounts.dto.user import UserCreateSchema
+from src.app.bll.accounts.dto.user import UserCreateDTO
 from src.app.bll.accounts.services.password import PasswordService
 from src.app.dal.accounts.models.user import User
 
@@ -13,7 +13,7 @@ class UserRepository:
 
     # TODO: в репо возвращать DTO, а не модели
 
-    async def create(self, user_data: UserCreateSchema) -> User:
+    async def create(self, user_data: UserCreateDTO) -> User:
         hashed_password: str = PasswordService.generate_password_hash(user_data.password)
 
         user: User = User(

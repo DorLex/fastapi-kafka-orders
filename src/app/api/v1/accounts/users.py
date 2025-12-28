@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.app.bll.accounts.dto.user import UserCreateSchema, UserResponseDTO
+from src.app.bll.accounts.dto.token import TokenPayloadDTO
+from src.app.bll.accounts.dto.user import UserCreateDTO, UserResponseDTO
 from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
 from src.app.bll.accounts.services.auth import AuthService, get_current_user
 from src.app.bll.accounts.services.user import UserService
@@ -13,7 +14,7 @@ from src.common.db.objs import get_db
 router: APIRouter = APIRouter(
     prefix='/users',
     tags=['Users'],
-    dependencies=[Depends(AuthService.verify_token)],
+    # dependencies=[Depends(AuthService.verify_token)], # TODO: подумать, как лучше переключать auth
 )
 
 
@@ -22,7 +23,7 @@ router: APIRouter = APIRouter(
     status_code=status.HTTP_201_CREATED,
     response_model=UserResponseDTO,
 )
-async def registration(user_data: UserCreateSchema, db: AsyncSession = Depends(get_db)) -> User:
+async def registration(user_data: UserCreateDTO, db: AsyncSession = Depends(get_db)) -> User:
     """Регистрация пользователя."""
 
     user_service: UserService = UserService(UserRepository(db))
@@ -36,7 +37,12 @@ async def registration(user_data: UserCreateSchema, db: AsyncSession = Depends(g
     '',
     response_model=list[UserResponseDTO],
 )
-async def get_users(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)) -> list[User]:
+async def get_users(
+    skip: int = 0,
+    limit: int = 100,
+    _token_data: TokenPayloadDTO = Depends(AuthService.decode_token),
+    db: AsyncSession = Depends(get_db),
+) -> list[User]:
     """Получить список пользователей."""
     user_service: UserService = UserService(UserRepository(db))
     users: list[User] = await user_service.get_users(skip, limit)
@@ -53,7 +59,12 @@ async def get_user_me(current_user: User = Depends(get_current_user)):
 
 
 @router.get('/with-orders', response_model=list[UserWithOrdersDTO])
-async def get_users_with_orders(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
+async def get_users_with_orders(
+    skip: int = 0,
+    limit: int = 100,
+    _token_data: TokenPayloadDTO = Depends(AuthService.decode_token),
+    db: AsyncSession = Depends(get_db),
+):
     """Получить пользователей с заказами."""
 
     user_service: UserService = UserService(UserRepository(db))

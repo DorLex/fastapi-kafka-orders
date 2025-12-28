@@ -1,18 +1,24 @@
-from passlib.context import CryptContext
+from logging import getLogger, Logger
 
-# TODO: куда положить этот объект?
-pwd_context: CryptContext = CryptContext(schemes=['bcrypt'], deprecated='auto')
+import bcrypt
+
+logger: Logger = getLogger(__name__)
 
 
 class PasswordService:
     @classmethod
     def generate_password_hash(cls, raw_password: str) -> str:
-        hashed_password: str = pwd_context.hash(raw_password)
-        print()
-        print(f'{type(hashed_password)=}')
-        print()
-        return hashed_password
+        hashed_password: bytes = bcrypt.hashpw(raw_password.encode('utf-8'), bcrypt.gensalt())
+        return hashed_password.decode('utf-8')
 
     @classmethod
     def verify_password(cls, raw_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(raw_password, hashed_password)
+        try:
+            return bcrypt.checkpw(
+                raw_password.encode('utf-8'),
+                hashed_password.encode('utf-8'),
+            )
+        except Exception as exc:
+            logger.warning(f'Ошибка при валидации пароля: {exc}')
+
+        return False

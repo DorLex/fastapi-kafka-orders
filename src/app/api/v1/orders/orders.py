@@ -16,7 +16,7 @@ from src.common.kafka_layer.producer.producer import get_producer
 router: APIRouter = APIRouter(
     prefix='/orders',
     tags=['Orders'],
-    dependencies=[Depends(AuthService.verify_token)],
+    dependencies=[Depends(AuthService.decode_token)],
 )
 
 
