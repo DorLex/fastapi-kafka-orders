@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.bll.accounts.dto.token import TokenResponseDTO
@@ -15,10 +15,10 @@ router: APIRouter = APIRouter(
 
 @router.post('/token', response_model=TokenResponseDTO)
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    credentials: HTTPBasicCredentials,
     db: AsyncSession = Depends(get_db),
 ) -> TokenResponseDTO:
     """Авторизация."""
 
     auth_service: AuthService = AuthService(UserRepository(db))
-    return await auth_service.generate_jwt(form_data)
+    return await auth_service.generate_jwt(credentials)

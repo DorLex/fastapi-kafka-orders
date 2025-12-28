@@ -3,7 +3,7 @@ from logging import getLogger, Logger
 from typing import Any
 
 from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBasicCredentials, HTTPBearer
 from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,7 +24,7 @@ from src.common.envs import env_config
 logger: Logger = getLogger(__name__)
 
 # TODO: в какой файл|куда положить этот объект?
-oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(tokenUrl='/auth/token/')
+http_bearer: HTTPBearer = HTTPBearer()
 
 
 class AuthService:
@@ -35,10 +35,12 @@ class AuthService:
         token_expire: datetime = datetime.now(timezone.utc) + timedelta(minutes=env_config.jwt_expiration_minutes)
         return token_expire
 
-    async def generate_jwt(self, form_data: OAuth2PasswordRequestForm) -> TokenResponseDTO:
-        user: User = await self.repository.get_user_by_username(form_data.username)
+    async def generate_jwt(self, credentials: HTTPBasicCredentials) -> TokenResponseDTO:
+        user: User | None = await self.repository.get_user_by_username(credentials.username)
+        if not user:
+            raise InvalidCredentialsException
 
-        if not PasswordService.verify_password(form_data.password, user.hashed_password):
+        if not PasswordService.verify_password(credentials.password, user.hashed_password):
             raise InvalidCredentialsException
 
         token_expire: datetime = self._generate_token_expire()
@@ -49,12 +51,16 @@ class AuthService:
         return TokenResponseDTO(access_token=encoded_jwt)
 
     @staticmethod
-    def decode_token(token: str = Depends(oauth2_scheme)) -> TokenPayloadDTO:
+    def decode_token(token: HTTPAuthorizationCredentials = Depends(http_bearer)) -> TokenPayloadDTO:
         try:
-            payload: dict[str, Any] = jwt.decode(token, env_config.jwt_secret_key, algorithms=[JWT_ALGORITHM])
+            payload: dict[str, Any] = jwt.decode(
+                token.credentials,
+                env_config.jwt_secret_key,
+                algorithms=[JWT_ALGORITHM],
+            )
 
-            user_id: int = payload.get('user_id')
-            username: str = payload.get('username')
+            user_id: int | None = payload.get('user_id')
+            username: str | None = payload.get('username')
 
             if not user_id or not username:
                 raise InvalidTokenException
@@ -65,13 +71,18 @@ class AuthService:
             logger.warning(exc)
             raise InvalidTokenException
 
+        except Exception as exc:
+            logger.error(exc)
+            raise FailedCredentialsException
 
+
+# TODO: это куда сложить?
 async def get_current_user(
     token_data: TokenPayloadDTO = Depends(AuthService.decode_token),
     db: AsyncSession = Depends(get_db),
 ) -> User:
     user_service: UserService = UserService(UserRepository(db))
-    user: User = await user_service.get_user_by_id(token_data.user_id)
+    user: User | None = await user_service.get_user_by_id(token_data.user_id)
     if not user:
         raise FailedCredentialsException
 

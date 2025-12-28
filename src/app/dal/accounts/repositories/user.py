@@ -49,10 +49,11 @@ class UserRepository:
         result: ScalarResult[User] = await self.db.scalars(query)
         return result.all()
 
-    async def get_user_by_username(self, username: str) -> User:
+    # TODO: проверить где может вернуться None, в где пустой список!!!
+    async def get_user_by_username(self, username: str) -> User | None:
         query: Select = select(User).where(User.username == username)
         return await self.db.scalar(query)
 
-    async def get_user_by_id(self, user_id: int) -> User:
+    async def get_user_by_id(self, user_id: int) -> User | None:
         query: Select = select(User).where(User.id == user_id)
         return await self.db.scalar(query)
