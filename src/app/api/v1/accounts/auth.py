@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,7 +15,7 @@ router: APIRouter = APIRouter(
 
 @router.post('/token', response_model=TokenResponseDTO)
 async def login(
-    credentials: HTTPBasicCredentials,
+    credentials: HTTPBasicCredentials = Body(example={'username': 'user_1', 'password': '123456789'}),
     db: AsyncSession = Depends(get_db),
 ) -> TokenResponseDTO:
     """Авторизация."""

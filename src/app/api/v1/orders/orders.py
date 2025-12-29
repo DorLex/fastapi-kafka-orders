@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from src.app.bll.accounts.dto.user import UserResponseDTO
 from src.app.bll.accounts.services.auth import AuthService, get_current_user
 from src.app.bll.orders.dto.order import OrderCreateSchema, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
@@ -42,13 +43,13 @@ async def get_orders(
 )
 async def create_order(
     order: OrderCreateSchema,
-    current_user: User = Depends(get_current_user),
+    current_user: UserResponseDTO = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Создать заказ."""
 
     order_service: OrderService = OrderService(OrderRepository(db))
-    order: Order = await order_service.create_order(current_user, order)
+    order: Order = await order_service.create_order(current_user.id, order)
     await db.commit()
 
     # TODO: сделать DTO для кафка-сообщений
@@ -70,7 +71,7 @@ async def create_order(
 async def get_my_orders(
     skip: int = 0,
     limit: int = 100,
-    current_user: User = Depends(get_current_user),
+    current_user: UserResponseDTO = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> list[Order]:
     """Получить заказы текущего пользователя."""

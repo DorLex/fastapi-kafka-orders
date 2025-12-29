@@ -8,6 +8,7 @@ from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.bll.accounts.dto.token import TokenPayloadDTO, TokenResponseDTO
+from src.app.bll.accounts.dto.user import UserResponseDTO
 from src.app.bll.accounts.exceptions.auth import (
     FailedCredentialsException,
     InvalidCredentialsException,
@@ -62,7 +63,7 @@ class AuthService:
             user_id: int | None = payload.get('user_id')
             username: str | None = payload.get('username')
 
-            if not user_id or not username:
+            if not (user_id and username):
                 raise InvalidTokenException
 
             return TokenPayloadDTO(user_id=user_id, username=username)
@@ -80,10 +81,10 @@ class AuthService:
 async def get_current_user(
     token_data: TokenPayloadDTO = Depends(AuthService.decode_token),
     db: AsyncSession = Depends(get_db),
-) -> User:
+) -> UserResponseDTO:
     user_service: UserService = UserService(UserRepository(db))
     user: User | None = await user_service.get_user_by_id(token_data.user_id)
     if not user:
         raise FailedCredentialsException
 
-    return user  # TODO: лучше возвращать UserDTO, а не БД-сущность
+    return UserResponseDTO.model_validate(user)

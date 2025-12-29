@@ -22,11 +22,6 @@ class UserCreateDTO(UserBaseDTO):
     )
 
 
-# TODO: не нужен?
-# class UserInDBSchema(UserBaseDTO):
-#     hashed_password: str
-
-
 class UserResponseDTO(UserBaseDTO):
     id: int
 

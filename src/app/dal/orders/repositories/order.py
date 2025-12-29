@@ -16,9 +16,9 @@ class OrderRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def create_order(self, user: User, order_data: OrderCreateSchema) -> Order:
+    async def create_order(self, user_id: int, order_data: OrderCreateSchema) -> Order:
         order: Order = Order(
-            user_id=user.id,
+            user_id=user_id,
             title=order_data.title,
             description=order_data.description,
 
@@ -49,14 +49,16 @@ class OrderRepository:
         query: Select = select(Order).where(Order.id == order_id)
         return await self.db.scalar(query)
 
-    async def get_order_by_user(self, user: User, skip: int = 0, limit: int = 100):
-        query = select(Order).where(Order.user_id == user.id).offset(skip).limit(limit)
+    async def get_order_by_user(self, user_id: int, skip: int = 0, limit: int = 100):
+        query = select(Order).where(Order.user_id == user_id).offset(skip).limit(limit)
         result = await self.db.scalars(query)
         return result.all()
 
     async def update_status(self, db_order: Order, status: OrderStatusEnum) -> Order:
         if not isinstance(status, OrderStatusEnum):
             raise ValueError('Недопустимый статус заказа')
+
+        # TODO: это вобще не так нужно сделать, и скорее всего через общий patch
 
         db_order.status = status
         await self.db.flush()
