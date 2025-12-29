@@ -3,9 +3,9 @@ from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.bll.accounts.dto.token import TokenResponseDTO
-from src.app.bll.accounts.services.auth import AuthService
+from src.app.bll.accounts.services.jwt import JWTService
 from src.app.dal.accounts.repositories.user import UserRepository
-from src.common.db.objs import get_db
+from src.common.db.dependencies import get_db
 
 router: APIRouter = APIRouter(
     prefix='/auth',
@@ -20,5 +20,5 @@ async def login(
 ) -> TokenResponseDTO:
     """Авторизация."""
 
-    auth_service: AuthService = AuthService(UserRepository(db))
-    return await auth_service.generate_jwt(credentials)
+    jwt_service: JWTService = JWTService(UserRepository(db))
+    return await jwt_service.generate_jwt(credentials)

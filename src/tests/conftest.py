@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from src.app.bll.accounts.dto import UserOutSchema
-from src.common.db.objs import Base, get_db
+from ..common.db.base_model import Base
+from ..common.db.dependencies import get_db
 from src.__dependencies import get_session
 from src.app.main import app as main_app
 from .config import MODE, async_engine_test, SessionTest

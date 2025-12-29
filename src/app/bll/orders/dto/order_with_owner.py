@@ -3,4 +3,4 @@ from src.app.bll.orders.dto.order import OrderResponseDTO
 
 
 class OrderWithOwnerDTO(OrderResponseDTO):
-    owner: UserResponseDTO
+    user: UserResponseDTO

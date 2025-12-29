@@ -7,7 +7,7 @@ from src.common.constants.order import OrderStatusEnum
 from src.app.dal.orders.models.order import Order
 from src.app.dal.orders.repositories.order import OrderRepository
 from src.app.bll.orders.services.order import OrderService
-from src.common.db.objs import AsyncSessionMaker
+from src.common.db.connection import AsyncSessionMaker
 
 logger: Logger = getLogger(__name__)
 

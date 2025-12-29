@@ -2,14 +2,15 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from src.app.bll.accounts.dependencies.user import get_current_user
 from src.app.bll.accounts.dto.token import TokenPayloadDTO
 from src.app.bll.accounts.dto.user import UserCreateDTO, UserResponseDTO
 from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
-from src.app.bll.accounts.services.auth import AuthService, get_current_user
+from src.app.bll.accounts.services.jwt import JWTService
 from src.app.bll.accounts.services.user import UserService
 from src.app.dal.accounts.models.user import User
 from src.app.dal.accounts.repositories.user import UserRepository
-from src.common.db.objs import get_db
+from src.common.db.dependencies import get_db
 
 router: APIRouter = APIRouter(
     prefix='/users',
@@ -40,7 +41,7 @@ async def registration(user_data: UserCreateDTO, db: AsyncSession = Depends(get_
 async def get_users(
     skip: int = 0,
     limit: int = 100,
-    _token_data: TokenPayloadDTO = Depends(AuthService.decode_token),
+    _token_data: TokenPayloadDTO = Depends(JWTService.decode_token),
     db: AsyncSession = Depends(get_db),
 ) -> list[User]:
     """Получить список пользователей."""
@@ -49,11 +50,8 @@ async def get_users(
     return users
 
 
-@router.get(
-    '/me',
-    response_model=UserResponseDTO,
-)
-async def get_user_me(current_user: User = Depends(get_current_user)):
+@router.get('/me')
+async def get_user_me(current_user: UserResponseDTO = Depends(get_current_user)) -> UserResponseDTO:
     """Получить текущего пользователя."""
     return current_user
 
@@ -62,7 +60,7 @@ async def get_user_me(current_user: User = Depends(get_current_user)):
 async def get_users_with_orders(
     skip: int = 0,
     limit: int = 100,
-    _token_data: TokenPayloadDTO = Depends(AuthService.decode_token),
+    _token_data: TokenPayloadDTO = Depends(JWTService.decode_token),
     db: AsyncSession = Depends(get_db),
 ):
     """Получить пользователей с заказами."""

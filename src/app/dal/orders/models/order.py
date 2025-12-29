@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.common.constants.order import OrderStatusEnum
-from src.common.db.objs import Base
+from src.common.db.base_model import Base
 
 
 class Order(Base):

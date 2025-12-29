@@ -3,21 +3,21 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from src.app.bll.accounts.dependencies.user import get_current_user
 from src.app.bll.accounts.dto.user import UserResponseDTO
-from src.app.bll.accounts.services.auth import AuthService, get_current_user
+from src.app.bll.accounts.services.jwt import JWTService
 from src.app.bll.orders.dto.order import OrderCreateSchema, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.bll.orders.services.order import OrderService
-from src.app.dal.accounts.models.user import User
 from src.app.dal.orders.models.order import Order
 from src.app.dal.orders.repositories.order import OrderRepository
-from src.common.db.objs import get_db
+from src.common.db.dependencies import get_db
 from src.common.kafka_layer.producer.producer import get_producer
 
 router: APIRouter = APIRouter(
     prefix='/orders',
     tags=['Orders'],
-    dependencies=[Depends(AuthService.decode_token)],
+    dependencies=[Depends(JWTService.decode_token)],
 )
 
 
@@ -77,7 +77,7 @@ async def get_my_orders(
     """Получить заказы текущего пользователя."""
 
     order_service: OrderService = OrderService(OrderRepository(db))
-    return await order_service.get_order_by_user(current_user, skip, limit)
+    return await order_service.get_order_by_user(current_user.id, skip, limit)
 
 
 @router.get(

@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 # TODO: придумать авто-импорт
 from src.app.dal.accounts.models.user import User  # noqa
-from src.common.db.objs import Base
+from src.common.db.base_model import Base
 from src.app.dal.orders.models.order import Order  # noqa
 
 # this is the Alembic Config object, which provides

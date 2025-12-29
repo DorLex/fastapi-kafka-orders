@@ -10,7 +10,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from src.common.db.model_import import ModelAutoImporter
-from src.common.db.objs import Base
+from src.common.db.base_model import Base
 from src.common.envs import env_config
 
 logging.basicConfig(level=INFO)
