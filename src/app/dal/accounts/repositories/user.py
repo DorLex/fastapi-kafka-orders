@@ -4,13 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from src.app.bll.accounts.dto.user import UserCreateDTO, UserHashedPasswordDTO, UserResponseDTO
+from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
 from src.app.bll.accounts.services.password import PasswordService
 from src.app.dal.accounts.models.user import User
 
-
-# TODO: в репо возвращать DTO, а не модели
-
-# TODO: проверить где может вернуться None, в где пустой список!!!
 
 class UserRepository:
     def __init__(self, db: AsyncSession) -> None:
@@ -48,12 +45,6 @@ class UserRepository:
 
         return UserHashedPasswordDTO.model_validate(user) if user else None
 
-    async def get_users_filter_by(self, **filters) -> list[User]:
-        # TODO: **filters выглядит не очень
-        query: Select = select(User).filter_by(**filters)
-        result: ScalarResult[User] = await self.db.scalars(query)
-        return result.all()
-
     async def check_user_exists(self, username: str, email: EmailStr | str) -> bool:
         query: Select = select(
             select(1)
@@ -70,7 +61,7 @@ class UserRepository:
 
         return await self.db.scalar(query)
 
-    async def get_users_with_orders(self, skip: int = 0, limit: int = 100) -> list[User]:
+    async def get_users_with_orders(self, skip: int = 0, limit: int = 100) -> list[UserWithOrdersDTO]:
         query: Select = (
             select(User)
             .options(joinedload(User.orders))
@@ -80,4 +71,4 @@ class UserRepository:
         )
 
         result: ScalarResult[User] = await self.db.scalars(query)
-        return result.unique().all()
+        return [UserWithOrdersDTO.model_validate(user) for user in result.unique().all()]
