@@ -4,10 +4,9 @@ from sqlalchemy import ScalarResult, select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from src.app.dal.accounts.models.user import User
 from src.app.bll.orders.dto.order import OrderCreateSchema
-from src.common.constants.order import OrderStatusEnum
 from src.app.dal.orders.models.order import Order
+from src.common.constants.order import OrderStatusEnum
 
 logger: Logger = getLogger(__name__)
 
@@ -21,7 +20,6 @@ class OrderRepository:
             user_id=user_id,
             title=order_data.title,
             description=order_data.description,
-
         )
 
         self.db.add(order)
