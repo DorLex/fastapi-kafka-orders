@@ -8,13 +8,13 @@ from jose import jwt, JWTError
 
 from src.app.bll.accounts.dependencies.auth import http_bearer
 from src.app.bll.accounts.dto.token import TokenPayloadDTO, TokenResponseDTO
+from src.app.bll.accounts.dto.user import UserResponseDTO, UserHashedPasswordDTO
 from src.app.bll.accounts.exceptions.auth import (
     FailedCredentialsException,
     InvalidCredentialsException,
     InvalidTokenException,
 )
 from src.app.bll.accounts.services.password import PasswordService
-from src.app.dal.accounts.models.user import User
 from src.app.dal.accounts.repositories.user import UserRepository
 from src.common.constants.auth import JWT_ALGORITHM
 from src.common.envs import env_config
@@ -31,7 +31,7 @@ class JWTService:
         return token_expire
 
     async def generate_jwt(self, credentials: HTTPBasicCredentials) -> TokenResponseDTO:
-        user: User | None = await self.repository.get_user_by_username(credentials.username)
+        user: UserHashedPasswordDTO | None = await self.repository.get_user_for_login(credentials.username)
         if not user:
             raise InvalidCredentialsException
 

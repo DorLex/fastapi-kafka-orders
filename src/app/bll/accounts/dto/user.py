@@ -26,3 +26,7 @@ class UserResponseDTO(UserBaseDTO):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserHashedPasswordDTO(UserResponseDTO):
+    hashed_password: str

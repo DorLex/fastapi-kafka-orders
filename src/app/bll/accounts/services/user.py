@@ -24,7 +24,7 @@ class UserService:
 
         return await self.repository.create(user_data)
 
-    async def get_users(self, skip: int = 0, limit: int = 100) -> list[User]:
+    async def get_users(self, skip: int = 0, limit: int = 100) -> list[UserResponseDTO]:
         return await self.repository.get_users(skip, limit)
 
     async def get_users_with_orders(self, skip: int = 0, limit: int = 100) -> list[User]:
@@ -33,5 +33,5 @@ class UserService:
     async def get_users_filter_by(self, **filters) -> list[User]:
         return await self.repository.get_users_filter_by(**filters)
 
-    async def get_user_by_id(self, user_id: int) -> User:
+    async def get_user_by_id(self, user_id: int) -> UserResponseDTO | None:
         return await self.repository.get_user_by_id(user_id)
