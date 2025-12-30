@@ -22,13 +22,12 @@ router: APIRouter = APIRouter(
 @router.post(
     '',
     status_code=status.HTTP_201_CREATED,
-    response_model=UserResponseDTO,
 )
-async def registration(user_data: UserCreateDTO, db: AsyncSession = Depends(get_db)) -> User:
+async def registration(user_data: UserCreateDTO, db: AsyncSession = Depends(get_db)) -> UserResponseDTO:
     """Регистрация пользователя."""
 
     user_service: UserService = UserService(UserRepository(db))
-    user: User = await user_service.create_user(user_data)
+    user: UserResponseDTO = await user_service.create_user(user_data)
     await db.commit()
 
     return user
