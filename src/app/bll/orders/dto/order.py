@@ -12,7 +12,7 @@ class OrderCreateSchema(OrderBaseSchema):
 
 class OrderResponseDTO(OrderBaseSchema):
     id: int
-    status: str
     user_id: int
+    status: str
 
     model_config = ConfigDict(from_attributes=True)

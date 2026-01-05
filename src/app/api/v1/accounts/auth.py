@@ -15,7 +15,7 @@ router: APIRouter = APIRouter(
 
 @router.post('/token', response_model=TokenResponseDTO)
 async def login(
-    credentials: HTTPBasicCredentials = Body(example={'username': 'user_1', 'password': '123456789'}),
+    credentials: HTTPBasicCredentials = Body(examples=[{'username': 'user_1', 'password': '123456789'}]),
     db: AsyncSession = Depends(get_db),
 ) -> TokenResponseDTO:
     """Авторизация."""
