@@ -8,7 +8,7 @@ up:
 	docker compose -f ./docker/docker-compose.yml up -d --build
 
 infra:
-	docker compose -f ./docker/docker-compose.yml --env-file ./.env up -d postgres # kafka kafka-ui
+	docker compose -f ./docker/docker-compose.yml --env-file ./.env up -d postgres kafka-ui # kafka
 
 test:
 	pytest -vv -s

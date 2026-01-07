@@ -45,27 +45,64 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
+  kafka:
+    image: apache/kafka:4.1.1
+    environment:
+      #      KAFKA_NODE_ID: 1
+      #      KAFKA_PROCESS_ROLES: broker,controller
+      #
+      #      #      KAFKA_LISTENERS: PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
+      #      KAFKA_LISTENERS: PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093,EXTERNAL://localhost:9094
+      #
+      #      #      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      #      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      #
+      #      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      #
+      #      #      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      #      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      #
+      #      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      #
+      #
+      #    #      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      #    #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      #    #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      #    #      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      #    #      KAFKA_NUM_PARTITIONS: 3
 
-#  kafka:
-#    image: bitnami/kafka:3.6.1-debian-12-r12
-#    env_file:
-#      - .env
-#    restart: unless-stopped
-#    ports:
-#      - "${KAFKA_PORT}:9092"
-#      - "${KAFKA_CONTROLLER_PORT}:9093"
-#      - "${KAFKA_EXTERNAL_PORT}:9094"
-#
-#  kafka-ui:
-#    image: provectuslabs/kafka-ui:master
-#    env_file:
-#      - .env
-#    restart: unless-stopped
-#    ports:
-#      - "8080:8080"
+
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9092
+
+
+
+
+
+
+    ports:
+      #      - "${KAFKA_PORT}:9092"
+      #      - "${KAFKA_EXTERNAL_PORT}:9094" # нужен, если хотим запустить backend нативно, а кафку в докере (для разработки)
+      - "9092:9092"
+      - "9094:9094"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local-cluster
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    ports:
+      - "8080:8080"
+
 #    depends_on:
 #      - kafka
-
 
 
 volumes:
