@@ -1,13 +1,19 @@
+from aiokafka import AIOKafkaProducer
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from src.app.bll.accounts.dependencies.user import get_current_user
 from src.app.bll.accounts.dto.user import UserResponseDTO
-from src.app.bll.orders.dto.order import OrderResponseDTO
+from src.app.bll.orders.dto.kafka import KafkaMessageDTO
+from src.app.bll.orders.dto.order import OrderCreateDTO, OrderNotificationDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
+from src.app.bll.orders.services.kafka import OrderKafkaService
 from src.app.bll.orders.services.order import OrderService
 from src.app.dal.orders.repositories.order import OrderRepository
+from src.common.constants.kafka import KafkaTopicEnum
 from src.common.db.dependencies import get_db
+from src.common.kafka_layer.producer.producer import get_producer
 
 router: APIRouter = APIRouter(
     prefix='/orders',
@@ -28,31 +34,28 @@ async def get_orders(
     return await order_service.get_orders(skip, limit)
 
 
-# @router.post(
-#     '',
-#     status_code=status.HTTP_201_CREATED,
-# )
-# async def create_order(
-#     order: OrderCreateSchema,
-#     current_user: UserResponseDTO = Depends(get_current_user),
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     """Создать заказ."""
-#
-#     order_service: OrderService = OrderService(OrderRepository(db))
-#     order: OrderResponseDTO = await order_service.create_order(current_user.id, order)
-#     await db.commit()
-#
-#     # TODO: сделать DTO для кафка-сообщений
-#     message = {'order_id': order.id, 'customer_email': current_user.email}
-#
-#     # TODO: вынести это в отдельный сервис или в OrderService?
-#     producer: AIOKafkaProducer = await get_producer()
-#     async with producer as pd:
-#         await pd.send_and_wait('orders', message)
-#
-#     # TODO: вернуть DTO
-#     return {'order_id': order.id, 'message': f'Заказ №{order.id} принят на обработку. (Статус: new)'}
+@router.post(
+    '',
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_order(
+    order_data: OrderCreateDTO,
+    current_user: UserResponseDTO = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> OrderNotificationDTO:
+    """Создать заказ."""
+
+    order_service: OrderService = OrderService(OrderRepository(db))
+    order: OrderResponseDTO = await order_service.create_order(current_user.id, order_data)
+    await db.commit()
+
+    producer: AIOKafkaProducer = await get_producer()
+    order_kafka_service: OrderKafkaService = OrderKafkaService(producer)
+
+    kafka_msg: KafkaMessageDTO = KafkaMessageDTO(order_id=order.id)
+    await order_kafka_service.send_message(KafkaTopicEnum.orders, kafka_msg)
+
+    return OrderNotificationDTO(order_id=order.id, message=f'Заказ №{order.id} принят в обработку.')
 
 
 @router.get('/my')

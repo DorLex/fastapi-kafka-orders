@@ -1,4 +1,4 @@
-from src.app.bll.orders.dto.order import OrderCreateSchema, OrderResponseDTO
+from src.app.bll.orders.dto.order import OrderCreateDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.dal.orders.models.order import Order
 from src.app.dal.orders.repositories.order import OrderRepository
@@ -8,8 +8,8 @@ class OrderService:
     def __init__(self, repository: OrderRepository) -> None:
         self.repository = repository
 
-    async def create_order(self, user_id: int, order: OrderCreateSchema) -> OrderResponseDTO:
-        return await self.repository.create_order(user_id, order)
+    async def create_order(self, user_id: int, order_data: OrderCreateDTO) -> OrderResponseDTO:
+        return await self.repository.create_order(user_id, order_data)
 
     async def get_orders(self, skip: int = 0, limit: int = 100) -> list[OrderResponseDTO]:
         return await self.repository.get_orders(skip, limit)

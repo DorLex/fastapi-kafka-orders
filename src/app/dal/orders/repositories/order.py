@@ -4,7 +4,7 @@ from sqlalchemy import ScalarResult, select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from src.app.bll.orders.dto.order import OrderCreateSchema, OrderResponseDTO
+from src.app.bll.orders.dto.order import OrderCreateDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.dal.orders.models.order import Order
 
@@ -15,7 +15,7 @@ class OrderRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def create_order(self, user_id: int, order_data: OrderCreateSchema) -> OrderResponseDTO:
+    async def create_order(self, user_id: int, order_data: OrderCreateDTO) -> OrderResponseDTO:
         order: Order = Order(
             user_id=user_id,
             title=order_data.title,

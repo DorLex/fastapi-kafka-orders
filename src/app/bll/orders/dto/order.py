@@ -1,18 +1,23 @@
 from pydantic import BaseModel, ConfigDict
 
 
-class OrderBaseSchema(BaseModel):
+class OrderBaseDTO(BaseModel):
     title: str
     description: str
 
 
-class OrderCreateSchema(OrderBaseSchema):
+class OrderCreateDTO(OrderBaseDTO):
     pass
 
 
-class OrderResponseDTO(OrderBaseSchema):
+class OrderResponseDTO(OrderBaseDTO):
     id: int
     user_id: int
     status: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class OrderNotificationDTO(BaseModel):
+    order_id: int
+    message: str
