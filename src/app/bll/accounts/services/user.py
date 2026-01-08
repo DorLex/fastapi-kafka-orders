@@ -3,6 +3,7 @@ from starlette import status
 
 from src.app.bll.accounts.dto.user import UserCreateDTO, UserResponseDTO
 from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
+from src.app.bll.common.dto.filter import PaginationParams
 from src.app.dal.accounts.repositories.user import UserRepository
 
 
@@ -24,11 +25,11 @@ class UserService:
 
         return await self.repository.create(user_data)
 
+    async def get_users(self, filters: PaginationParams) -> list[UserResponseDTO]:
+        return await self.repository.get_users(filters)
+
     async def get_user_by_id(self, user_id: int) -> UserResponseDTO | None:
         return await self.repository.get_user_by_id(user_id)
 
-    async def get_users(self, skip: int = 0, limit: int = 100) -> list[UserResponseDTO]:
-        return await self.repository.get_users(skip, limit)
-
-    async def get_users_with_orders(self, skip: int = 0, limit: int = 100) -> list[UserWithOrdersDTO]:
-        return await self.repository.get_users_with_orders(skip, limit)
+    async def get_users_with_orders(self, filters: PaginationParams) -> list[UserWithOrdersDTO]:
+        return await self.repository.get_users_with_orders(filters)

@@ -4,6 +4,7 @@ from sqlalchemy import ScalarResult, select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from src.app.bll.common.dto.filter import PaginationParams
 from src.app.bll.orders.dto.order import OrderCreateDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.dal.orders.models.order import Order
@@ -27,8 +28,8 @@ class OrderRepository:
 
         return OrderResponseDTO.model_validate(order)
 
-    async def get_orders(self, skip: int = 0, limit: int = 100) -> list[OrderResponseDTO]:
-        query: Select = select(Order).offset(skip).limit(limit)
+    async def get_orders(self, filters: PaginationParams) -> list[OrderResponseDTO]:
+        query: Select = select(Order).limit(filters.limit).offset(filters.offset)
         result: ScalarResult[Order] = await self.db.scalars(query)
 
         return [OrderResponseDTO.model_validate(order) for order in result.all()]
@@ -39,19 +40,25 @@ class OrderRepository:
 
         return OrderResponseDTO.model_validate(order) if order else None
 
-    async def get_order_by_user(self, user_id: int, skip: int = 0, limit: int = 100) -> list[OrderResponseDTO]:
+    async def get_order_by_user(self, user_id: int, filters: PaginationParams) -> list[OrderResponseDTO]:
         # TODO: сделать общий фильтр?
-        query: Select = select(Order).where(Order.user_id == user_id).offset(skip).limit(limit)
-        result: ScalarResult[Order] = await self.db.scalars(query)
+        query: Select = (
+            select(Order)
+            .where(Order.user_id == user_id)
+            .limit(filters.limit)
+            .offset(filters.offset)
+        )
 
+        result: ScalarResult[Order] = await self.db.scalars(query)
         return [OrderResponseDTO.model_validate(order) for order in result.all()]
 
-    async def get_orders_with_owner(self, skip: int = 0, limit: int = 100) -> list[OrderWithOwnerDTO]:
+    async def get_orders_with_owner(self, filters: PaginationParams) -> list[OrderWithOwnerDTO]:
         query: Select = (
             select(Order)
             .options(joinedload(Order.user))
             .order_by(Order.id)
-            .offset(skip).limit(limit)
+            .limit(filters.limit)
+            .offset(filters.offset)
         )
 
         result: ScalarResult[Order] = await self.db.scalars(query)

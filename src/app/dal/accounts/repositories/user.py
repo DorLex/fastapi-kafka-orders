@@ -6,6 +6,7 @@ from sqlalchemy.orm import joinedload
 from src.app.bll.accounts.dto.user import UserCreateDTO, UserHashedPasswordDTO, UserResponseDTO
 from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
 from src.app.bll.accounts.services.password import PasswordService
+from src.app.bll.common.dto.filter import PaginationParams
 from src.app.dal.accounts.models.user import User
 
 
@@ -27,8 +28,8 @@ class UserRepository:
 
         return UserResponseDTO.model_validate(user)
 
-    async def get_users(self, skip: int = 0, limit: int = 100) -> list[UserResponseDTO]:
-        query: Select = select(User).offset(skip).limit(limit)
+    async def get_users(self, filters: PaginationParams) -> list[UserResponseDTO]:
+        query: Select = select(User).limit(filters.limit).offset(filters.offset)
         result: ScalarResult[User] = await self.db.scalars(query)
 
         return [UserResponseDTO.model_validate(user) for user in result.all()]
@@ -61,13 +62,13 @@ class UserRepository:
 
         return await self.db.scalar(query)
 
-    async def get_users_with_orders(self, skip: int = 0, limit: int = 100) -> list[UserWithOrdersDTO]:
+    async def get_users_with_orders(self, filters: PaginationParams) -> list[UserWithOrdersDTO]:
         query: Select = (
             select(User)
             .options(joinedload(User.orders))
             .order_by(User.id)
-            .offset(skip)
-            .limit(limit)
+            .limit(filters.limit)
+            .offset(filters.offset)
         )
 
         result: ScalarResult[User] = await self.db.scalars(query)

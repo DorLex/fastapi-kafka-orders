@@ -1,10 +1,11 @@
 from aiokafka import AIOKafkaProducer
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from src.app.bll.accounts.dependencies.user import get_current_user
 from src.app.bll.accounts.dto.user import UserResponseDTO
+from src.app.bll.common.dto.filter import PaginationParams
 from src.common.kafka_layer.dto import KafkaMessageDTO
 from src.app.bll.orders.dto.order import OrderCreateDTO, OrderNotificationDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
@@ -24,14 +25,13 @@ router: APIRouter = APIRouter(
 
 @router.get('')
 async def get_orders(
-    skip: int = 0,
-    limit: int = 100,
+    filters: PaginationParams = Query(),
     db: AsyncSession = Depends(get_db),
 ) -> list[OrderResponseDTO]:
     """Получить все заказы."""
 
     order_service: OrderService = OrderService(OrderRepository(db))
-    return await order_service.get_orders(skip, limit)
+    return await order_service.get_orders(filters)
 
 
 @router.post(
@@ -60,8 +60,7 @@ async def create_order(
 
 @router.get('/my')
 async def get_my_orders(
-    skip: int = 0,
-    limit: int = 100,
+    filters: PaginationParams = Query(),
     current_user: UserResponseDTO = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> list[OrderResponseDTO]:
@@ -69,16 +68,15 @@ async def get_my_orders(
 
     order_service: OrderService = OrderService(OrderRepository(db))
     # TODO: сделать общий фильтр?
-    return await order_service.get_order_by_user(current_user.id, skip, limit)
+    return await order_service.get_order_by_user(current_user.id, filters)
 
 
 @router.get('/with-owner')
 async def get_orders_with_owner(
-    skip: int = 0,
-    limit: int = 100,
+    filters: PaginationParams = Query(),
     db: AsyncSession = Depends(get_db),
 ) -> list[OrderWithOwnerDTO]:
     """Получить заказы с владельцем."""
 
     order_service: OrderService = OrderService(OrderRepository(db))
-    return await order_service.get_orders_with_owner(skip, limit)
+    return await order_service.get_orders_with_owner(filters)
