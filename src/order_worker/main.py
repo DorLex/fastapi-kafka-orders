@@ -1,6 +1,10 @@
 import asyncio
+from logging import getLogger, Logger
 
-from src.common.kafka_layer.consumer.consumer_listener import consumer_listening
+from src.order_worker.api.consumer import consumer_listening
+
+logger: Logger = getLogger(__name__)
 
 if __name__ == '__main__':
+    logger.info('AIOKafkaConsumer Running...')
     asyncio.run(consumer_listening())

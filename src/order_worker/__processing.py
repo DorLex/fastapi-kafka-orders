@@ -1,6 +1,6 @@
 from aiokafka import ConsumerRecord
 
-from src.order_worker.service import OrderProcessor
+from src.order_worker.__service import OrderProcessor
 
 
 async def run_order_processing(consumer_message: ConsumerRecord):
