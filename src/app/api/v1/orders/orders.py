@@ -5,7 +5,7 @@ from starlette import status
 
 from src.app.bll.accounts.dependencies.user import get_current_user
 from src.app.bll.accounts.dto.user import UserResponseDTO
-from src.app.bll.orders.dto.kafka import KafkaMessageDTO
+from src.common.kafka_layer.dto import KafkaMessageDTO
 from src.app.bll.orders.dto.order import OrderCreateDTO, OrderNotificationDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.bll.orders.services.kafka import OrderKafkaService
@@ -13,7 +13,7 @@ from src.app.bll.orders.services.order import OrderService
 from src.app.dal.orders.repositories.order import OrderRepository
 from src.common.constants.kafka import KafkaTopicEnum
 from src.common.db.dependencies import get_db
-from src.common.kafka_layer.producer.producer import get_producer
+from src.common.kafka_layer.producer import get_producer
 
 router: APIRouter = APIRouter(
     prefix='/orders',

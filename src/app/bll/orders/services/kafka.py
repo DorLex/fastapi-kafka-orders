@@ -1,6 +1,6 @@
 from aiokafka import AIOKafkaProducer
 
-from src.app.bll.orders.dto.kafka import KafkaMessageDTO
+from src.common.kafka_layer.dto import KafkaMessageDTO
 from src.common.constants.kafka import KafkaTopicEnum
 
 

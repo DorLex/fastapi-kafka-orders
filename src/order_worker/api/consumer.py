@@ -1,9 +1,11 @@
-from logging import getLogger, Logger, INFO
 import logging
+from logging import getLogger, INFO, Logger
+
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
 
 from src.common.constants.kafka import KafkaGroupEnum, KafkaTopicEnum
-from src.common.kafka_layer.consumer.consumer import get_consumer
+from src.common.kafka_layer.consumer import get_consumer
+from src.common.kafka_layer.dto import KafkaMessageDTO
 
 logging.basicConfig(level=INFO)  # TODO: убрать
 logger: Logger = getLogger(__name__)
@@ -25,7 +27,9 @@ async def consumer_listening() -> None:
                 if not raw_message_value:
                     continue
 
-                print('=== Тут будет обработка заказа === ')
+                kafka_msg: KafkaMessageDTO = KafkaMessageDTO(**raw_message_value)
+
+                print(f'=== Тут будет обработка заказа {kafka_msg} === ')
 
             except Exception as exc:  # чтобы сервис не падал полностью при рандомной ошибке
                 logger.exception(exc)
