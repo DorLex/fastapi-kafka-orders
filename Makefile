@@ -5,10 +5,10 @@ order_worker:
 	python -m src.order_worker.main
 
 up:
-	docker compose -f ./docker/docker-compose.yml up -d --build
+	docker compose -f ./docker/docker-compose.yml --env-file ./docker/.env up -d --build
 
 infra:
-	docker compose -f ./docker/docker-compose.yml --env-file ./.env up -d postgres kafka-ui # kafka
+	docker compose -f ./docker/docker-compose.yml --env-file ./docker/.env up -d postgres kafka kafka-ui
 
 test:
 	pytest -vv -s

@@ -5,34 +5,36 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    #    env_file:
-    #      - .env
+    image: fastapi-kafka-backend:dev
+    environment:
+      JWT_SECRET_KEY:
+      JWT_EXPIRATION_MINUTES:
+      POSTGRES_HOST:
     #    volumes:
     #      - ../logs/orders_app:/project/logs
     ports:
       - "8000:8000"
-    #    depends_on:
-    #      - postgres
-    #      - kafka
-    #    entrypoint: [ "docker/wait-for-it.sh", "${KAFKA_HOST}:${KAFKA_PORT}", "--" ]
+    depends_on:
+      postgres:
+        condition: service_started
+      kafka:
+        condition: service_healthy # ждем, пока у kafka отработает healthcheck
     command: "uvicorn src.app.main:app --host 0.0.0.0 --port 8000"
 
-
-
-  #  order_worker:
-  # TODO: использовать app-image
-  #    build:
-  #      context: ../
-  #      dockerfile: docker/Dockerfile
-  #    env_file:
-  #      - .env
-  ##    volumes:
-  ##      - ../logs/order_worker:/project/logs
-  #    depends_on:
-  #      - postgres
-  #      - kafka
-  #    entrypoint: [ "docker/wait-for-it.sh", "${KAFKA_HOST}:${KAFKA_PORT}", "--" ]
-  #    command: "python -m src.run_consumer"
+  order_worker:
+    image: fastapi-kafka-backend:dev
+    environment:
+      KAFKA_HOST:
+      KAFKA_PORT:
+      POSTGRES_HOST:
+    #    volumes:
+    #      - ../logs/order_worker:/project/logs
+    depends_on:
+      postgres:
+        condition: service_started
+      kafka:
+        condition: service_healthy # ждем, пока у kafka отработает healthcheck
+    command: "python -m src.order_worker.main"
 
   postgres:
     image: postgres:17.7-alpine3.23
@@ -52,16 +54,11 @@ services:
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
-
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
     ports:
-      #- "9092:9092" # кажется, ненужен
       - "9094:9094"
     healthcheck:
       test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list" ] # проверка внутри контейнера
@@ -77,9 +74,9 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
     ports:
       - "8080:8080"
-#    depends_on:
-#      kafka:
-#        condition: service_healthy # ждем, пока у kafka отработает healthcheck
+    depends_on:
+      kafka:
+        condition: service_healthy # ждем, пока у kafka отработает healthcheck
 
 
 volumes:

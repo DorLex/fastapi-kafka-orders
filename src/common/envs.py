@@ -6,19 +6,19 @@ from src.common.constants.paths import BASE_DIR
 class EnvConfig(BaseSettings):
     # Backend
     sqlalchemy_echo: bool = True
-    jwt_secret_key: str
+    jwt_secret_key: str = 'local-secret'
     jwt_expiration_minutes: int = 30
 
     # Database
-    postgres_user: str
-    postgres_password: str
-    postgres_db: str
-    postgres_host: str
-    postgres_port: int
+    postgres_user: str = 'local_user'
+    postgres_password: str = 'local_password'
+    postgres_db: str = 'orders_db'
+    postgres_host: str = 'localhost'
+    postgres_port: int = 5432
 
     # Kafka
-    kafka_host: str
-    kafka_port: int
+    kafka_host: str = 'localhost'
+    kafka_port: int = 9094
 
     @property
     def postgresql_url(self) -> str:
