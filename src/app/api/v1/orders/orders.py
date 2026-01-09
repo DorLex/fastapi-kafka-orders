@@ -1,5 +1,6 @@
 from aiokafka import AIOKafkaProducer
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Path, Query
+from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -7,7 +8,7 @@ from src.app.bll.accounts.dependencies.user import get_current_user
 from src.app.bll.accounts.dto.user import UserResponseDTO
 from src.app.bll.common.dto.filters import PaginationParams
 from src.app.bll.orders.dto.filters import OrderFilter
-from src.app.bll.orders.dto.order import OrderCreateDTO, OrderNotificationDTO, OrderResponseDTO
+from src.app.bll.orders.dto.order import OrderCreateDTO, OrderNotificationDTO, OrderPartialUpdateDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.bll.orders.services.kafka import OrderKafkaService
 from src.app.bll.orders.services.order import OrderService
@@ -22,17 +23,6 @@ router: APIRouter = APIRouter(
     tags=['Orders'],
     dependencies=[Depends(get_current_user)],
 )
-
-
-@router.get('')
-async def get_orders(
-    filters: OrderFilter = Query(),
-    db: AsyncSession = Depends(get_db),
-) -> list[OrderResponseDTO]:
-    """Получить все заказы."""
-
-    order_service: OrderService = OrderService(OrderRepository(db))
-    return await order_service.get_orders_by_filter(filters)
 
 
 @router.post(
@@ -57,6 +47,30 @@ async def create_order(
     await order_kafka_service.send_message(KafkaTopicEnum.orders, kafka_msg)
 
     return OrderNotificationDTO(order_id=order.id, message=f'Заказ №{order.id} принят в обработку.')
+
+
+@router.patch('/{order_id}')
+async def update_order_partial(
+    order_data: OrderPartialUpdateDTO,
+    order_id: PositiveInt = Path(gt=0),
+    db: AsyncSession = Depends(get_db),
+) -> OrderResponseDTO:
+    order_service: OrderService = OrderService(OrderRepository(db))
+    updated_order: OrderResponseDTO = await order_service.update_order_partial(order_id, order_data)
+    await db.commit()
+
+    return updated_order
+
+
+@router.get('')
+async def get_orders(
+    filters: OrderFilter = Query(),
+    db: AsyncSession = Depends(get_db),
+) -> list[OrderResponseDTO]:
+    """Получить все заказы."""
+
+    order_service: OrderService = OrderService(OrderRepository(db))
+    return await order_service.get_orders_by_filter(filters)
 
 
 @router.get('/my')

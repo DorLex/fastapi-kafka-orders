@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from src.common.constants.order import OrderStatusEnum
+
 
 class OrderBaseDTO(BaseModel):
     title: str
@@ -12,10 +14,16 @@ class OrderCreateDTO(OrderBaseDTO):
     pass
 
 
+class OrderPartialUpdateDTO(BaseModel):
+    title: str = None
+    description: str = None
+    status: OrderStatusEnum = None
+
+
 class OrderResponseDTO(OrderBaseDTO):
     id: int
     user_id: int
-    status: str
+    status: OrderStatusEnum
     created_at: datetime
     updated_at: datetime
 
