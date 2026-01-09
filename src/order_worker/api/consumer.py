@@ -1,11 +1,13 @@
 import logging
 from logging import INFO, Logger, getLogger
-
-from aiokafka import AIOKafkaConsumer, ConsumerRecord
+from typing import TYPE_CHECKING
 
 from src.common.constants.kafka import KafkaGroupEnum, KafkaTopicEnum
 from src.common.kafka_layer.consumer import get_consumer
 from src.common.kafka_layer.dto import KafkaMessageDTO
+
+if TYPE_CHECKING:
+    from aiokafka import AIOKafkaConsumer, ConsumerRecord
 
 logging.basicConfig(level=INFO)  # TODO: убрать
 logger: Logger = getLogger(__name__)

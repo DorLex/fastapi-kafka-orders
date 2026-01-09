@@ -1,4 +1,5 @@
-from aiokafka import AIOKafkaProducer
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends, Path, Query
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,6 +18,9 @@ from src.common.constants.kafka import KafkaTopicEnum
 from src.common.db.dependencies import get_db
 from src.common.kafka_layer.dto import KafkaMessageDTO
 from src.common.kafka_layer.producer import get_producer
+
+if TYPE_CHECKING:
+    from aiokafka import AIOKafkaProducer
 
 router: APIRouter = APIRouter(
     prefix='/orders',
