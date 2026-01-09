@@ -3,7 +3,7 @@ from starlette import status
 
 from src.app.bll.accounts.dto.user import UserCreateDTO, UserResponseDTO
 from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
-from src.app.bll.common.dto.filter import PaginationParams
+from src.app.bll.common.dto.filters import PaginationParams
 from src.app.dal.accounts.repositories.user import UserRepository
 
 

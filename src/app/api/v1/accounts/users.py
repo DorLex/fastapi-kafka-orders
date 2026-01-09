@@ -6,7 +6,7 @@ from src.app.bll.accounts.dependencies.user import get_current_user
 from src.app.bll.accounts.dto.user import UserCreateDTO, UserResponseDTO
 from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
 from src.app.bll.accounts.services.user import UserService
-from src.app.bll.common.dto.filter import PaginationParams
+from src.app.bll.common.dto.filters import PaginationParams
 from src.app.dal.accounts.repositories.user import UserRepository
 from src.common.db.dependencies import get_db
 

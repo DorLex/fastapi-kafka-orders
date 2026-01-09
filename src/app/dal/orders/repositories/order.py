@@ -4,7 +4,8 @@ from sqlalchemy import ScalarResult, select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from src.app.bll.common.dto.filter import PaginationParams
+from src.app.bll.common.dto.filters import PaginationParams
+from src.app.bll.orders.dto.filters import OrderFilter
 from src.app.bll.orders.dto.order import OrderCreateDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.dal.orders.models.order import Order
@@ -28,26 +29,15 @@ class OrderRepository:
 
         return OrderResponseDTO.model_validate(order)
 
-    async def get_orders(self, filters: PaginationParams) -> list[OrderResponseDTO]:
-        query: Select = select(Order).limit(filters.limit).offset(filters.offset)
-        result: ScalarResult[Order] = await self.db.scalars(query)
+    async def get_orders_by_filter(self, filters: OrderFilter) -> list[OrderResponseDTO]:
+        query: Select = select(Order)
 
-        return [OrderResponseDTO.model_validate(order) for order in result.all()]
-
-    async def get_order_by_id(self, order_id: int) -> OrderResponseDTO | None:
-        query: Select = select(Order).where(Order.id == order_id)
-        order: Order | None = await self.db.scalar(query)
-
-        return OrderResponseDTO.model_validate(order) if order else None
-
-    async def get_order_by_user(self, user_id: int, filters: PaginationParams) -> list[OrderResponseDTO]:
-        # TODO: сделать общий фильтр?
-        query: Select = (
-            select(Order)
-            .where(Order.user_id == user_id)
-            .limit(filters.limit)
-            .offset(filters.offset)
-        )
+        if filters.user_id:
+            query: Select = query.where(Order.user_id == filters.user_id)
+        if filters.limit:
+            query: Select = query.limit(filters.limit)
+        if filters.offset:
+            query: Select = query.offset(filters.offset)
 
         result: ScalarResult[Order] = await self.db.scalars(query)
         return [OrderResponseDTO.model_validate(order) for order in result.all()]
@@ -63,6 +53,12 @@ class OrderRepository:
 
         result: ScalarResult[Order] = await self.db.scalars(query)
         return [OrderWithOwnerDTO.model_validate(order) for order in result.all()]
+
+    async def get_order_by_id(self, order_id: int) -> OrderResponseDTO | None:
+        query: Select = select(Order).where(Order.id == order_id)
+        order: Order | None = await self.db.scalar(query)
+
+        return OrderResponseDTO.model_validate(order) if order else None
 
     # async def update_status(self, db_order: Order, status: OrderStatusEnum) -> Order:
     #     if not isinstance(status, OrderStatusEnum):

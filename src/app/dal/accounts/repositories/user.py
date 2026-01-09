@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload
 from src.app.bll.accounts.dto.user import UserCreateDTO, UserHashedPasswordDTO, UserResponseDTO
 from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
 from src.app.bll.accounts.services.password import PasswordService
-from src.app.bll.common.dto.filter import PaginationParams
+from src.app.bll.common.dto.filters import PaginationParams
 from src.app.dal.accounts.models.user import User
 
 

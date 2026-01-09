@@ -5,8 +5,8 @@ from starlette import status
 
 from src.app.bll.accounts.dependencies.user import get_current_user
 from src.app.bll.accounts.dto.user import UserResponseDTO
-from src.app.bll.common.dto.filter import PaginationParams
-from src.common.kafka_layer.dto import KafkaMessageDTO
+from src.app.bll.common.dto.filters import PaginationParams
+from src.app.bll.orders.dto.filters import OrderFilter
 from src.app.bll.orders.dto.order import OrderCreateDTO, OrderNotificationDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.bll.orders.services.kafka import OrderKafkaService
@@ -14,6 +14,7 @@ from src.app.bll.orders.services.order import OrderService
 from src.app.dal.orders.repositories.order import OrderRepository
 from src.common.constants.kafka import KafkaTopicEnum
 from src.common.db.dependencies import get_db
+from src.common.kafka_layer.dto import KafkaMessageDTO
 from src.common.kafka_layer.producer import get_producer
 
 router: APIRouter = APIRouter(
@@ -25,13 +26,13 @@ router: APIRouter = APIRouter(
 
 @router.get('')
 async def get_orders(
-    filters: PaginationParams = Query(),
+    filters: OrderFilter = Query(),
     db: AsyncSession = Depends(get_db),
 ) -> list[OrderResponseDTO]:
     """Получить все заказы."""
 
     order_service: OrderService = OrderService(OrderRepository(db))
-    return await order_service.get_orders(filters)
+    return await order_service.get_orders_by_filter(filters)
 
 
 @router.post(
@@ -67,8 +68,9 @@ async def get_my_orders(
     """Получить заказы текущего пользователя."""
 
     order_service: OrderService = OrderService(OrderRepository(db))
-    # TODO: сделать общий фильтр?
-    return await order_service.get_order_by_user(current_user.id, filters)
+    order_filter: OrderFilter = OrderFilter(user_id=current_user.id, **filters.model_dump())
+
+    return await order_service.get_orders_by_filter(order_filter)
 
 
 @router.get('/with-owner')
