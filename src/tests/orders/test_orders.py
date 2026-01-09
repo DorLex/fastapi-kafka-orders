@@ -75,4 +75,4 @@
 #     async def test_update_order_status(self, base_test_order):
 #         async with SessionTest() as session:
 #             with pytest.raises(ValueError):
-#                 await OrderRepository(session).update_status(base_test_order, 'incorrect_status')  # type: ignore
+#                 await OrderRepository(session).update_status(base_test_order, 'incorrect_status')

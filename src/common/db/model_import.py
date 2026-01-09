@@ -1,6 +1,6 @@
 import importlib
 import pkgutil
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 from pathlib import Path
 from pkgutil import ModuleInfo
 from types import ModuleType
@@ -12,9 +12,7 @@ logger: Logger = getLogger(__name__)
 
 
 class ModelAutoImporter:
-    """
-    Автоматически импортирует все SQLAlchemy-модели, чтобы их видел Alembic.
-    """
+    """Автоматически импортирует все SQLAlchemy-модели, чтобы их видел Alembic."""
 
     @classmethod
     def import_models(cls) -> None:

@@ -1,6 +1,6 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
-from sqlalchemy import func, ScalarResult, select, Select, update, Update
+from sqlalchemy import ScalarResult, Select, Update, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -64,11 +64,7 @@ class OrderRepository:
 
     async def get_orders_with_owner(self, filters: PaginationParams) -> list[OrderWithOwnerDTO]:
         query: Select = (
-            select(Order)
-            .options(joinedload(Order.user))
-            .order_by(Order.id)
-            .limit(filters.limit)
-            .offset(filters.offset)
+            select(Order).options(joinedload(Order.user)).order_by(Order.id).limit(filters.limit).offset(filters.offset)
         )
 
         result: ScalarResult[Order] = await self.db.scalars(query)

@@ -1,5 +1,5 @@
 import logging
-from logging import getLogger, INFO, Logger
+from logging import INFO, Logger, getLogger
 
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
 
@@ -29,7 +29,7 @@ async def consumer_listening() -> None:
 
                 kafka_msg: KafkaMessageDTO = KafkaMessageDTO(**raw_message_value)
 
-                print(f'=== Тут будет обработка заказа {kafka_msg} === ')
+                logger.info(f'=== Тут будет обработка заказа {kafka_msg} ===')
 
-            except Exception as exc:  # чтобы сервис не падал полностью при рандомной ошибке
-                logger.exception(exc)
+            except Exception:  # чтобы сервис не падал полностью при рандомной ошибке
+                logger.exception('Ошибка при работе consumer')

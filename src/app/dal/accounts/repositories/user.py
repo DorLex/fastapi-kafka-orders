@@ -1,5 +1,5 @@
 from pydantic import EmailStr
-from sqlalchemy import or_, ScalarResult, select, Select
+from sqlalchemy import ScalarResult, Select, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -64,11 +64,7 @@ class UserRepository:
 
     async def get_users_with_orders(self, filters: PaginationParams) -> list[UserWithOrdersDTO]:
         query: Select = (
-            select(User)
-            .options(joinedload(User.orders))
-            .order_by(User.id)
-            .limit(filters.limit)
-            .offset(filters.offset)
+            select(User).options(joinedload(User.orders)).order_by(User.id).limit(filters.limit).offset(filters.offset)
         )
 
         result: ScalarResult[User] = await self.db.scalars(query)

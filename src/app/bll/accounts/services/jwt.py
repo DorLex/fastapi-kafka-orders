@@ -1,14 +1,14 @@
-from datetime import datetime, timedelta, timezone
-from logging import getLogger, Logger
+from datetime import UTC, datetime, timedelta
+from logging import Logger, getLogger
 from typing import Any
 
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBasicCredentials
-from jose import jwt, JWTError
+from jose import JWTError, jwt
 
 from src.app.bll.accounts.dependencies.auth import http_bearer
 from src.app.bll.accounts.dto.token import TokenPayloadDTO, TokenResponseDTO
-from src.app.bll.accounts.dto.user import UserResponseDTO, UserHashedPasswordDTO
+from src.app.bll.accounts.dto.user import UserHashedPasswordDTO
 from src.app.bll.accounts.exceptions.auth import (
     FailedCredentialsException,
     InvalidCredentialsException,
@@ -27,7 +27,7 @@ class JWTService:
         self.repository = repository
 
     def _generate_token_expire(self) -> datetime:
-        token_expire: datetime = datetime.now(timezone.utc) + timedelta(minutes=env_config.jwt_expiration_minutes)
+        token_expire: datetime = datetime.now(UTC) + timedelta(minutes=env_config.jwt_expiration_minutes)
         return token_expire
 
     async def generate_jwt(self, credentials: HTTPBasicCredentials) -> TokenResponseDTO:

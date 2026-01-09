@@ -1,5 +1,5 @@
 import json
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 from typing import TypeVar
 
 logger: Logger = getLogger(__name__)

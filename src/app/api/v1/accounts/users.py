@@ -22,7 +22,6 @@ router: APIRouter = APIRouter(
 )
 async def registration(user_data: UserCreateDTO, db: AsyncSession = Depends(get_db)) -> UserResponseDTO:
     """Регистрация пользователя."""
-
     user_service: UserService = UserService(UserRepository(db))
     user: UserResponseDTO = await user_service.create_user(user_data)
     await db.commit()
@@ -37,7 +36,6 @@ async def get_users(
     db: AsyncSession = Depends(get_db),
 ) -> list[UserResponseDTO]:
     """Получить список пользователей."""
-
     user_service: UserService = UserService(UserRepository(db))
     users: list[UserResponseDTO] = await user_service.get_users(filters)
     return users
@@ -46,7 +44,6 @@ async def get_users(
 @router.get('/me')
 async def get_user_me(current_user: UserResponseDTO = Depends(get_current_user)) -> UserResponseDTO:
     """Получить текущего пользователя."""
-
     return current_user
 
 
@@ -57,7 +54,6 @@ async def get_users_with_orders(
     db: AsyncSession = Depends(get_db),
 ) -> list[UserWithOrdersDTO]:
     """Получить пользователей с заказами."""
-
     user_service: UserService = UserService(UserRepository(db))
     users_with_orders: list[UserWithOrdersDTO] = await user_service.get_users_with_orders(filters)
     return users_with_orders

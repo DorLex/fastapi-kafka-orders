@@ -35,7 +35,6 @@ async def create_order(
     db: AsyncSession = Depends(get_db),
 ) -> OrderNotificationDTO:
     """Создать заказ."""
-
     order_service: OrderService = OrderService(OrderRepository(db))
     order: OrderResponseDTO = await order_service.create_order(current_user.id, order_data)
     await db.commit()
@@ -68,7 +67,6 @@ async def get_orders(
     db: AsyncSession = Depends(get_db),
 ) -> list[OrderResponseDTO]:
     """Получить все заказы."""
-
     order_service: OrderService = OrderService(OrderRepository(db))
     return await order_service.get_orders_by_filter(filters)
 
@@ -80,7 +78,6 @@ async def get_my_orders(
     db: AsyncSession = Depends(get_db),
 ) -> list[OrderResponseDTO]:
     """Получить заказы текущего пользователя."""
-
     order_service: OrderService = OrderService(OrderRepository(db))
     order_filter: OrderFilter = OrderFilter(user_id=current_user.id, **filters.model_dump())
 
@@ -93,6 +90,5 @@ async def get_orders_with_owner(
     db: AsyncSession = Depends(get_db),
 ) -> list[OrderWithOwnerDTO]:
     """Получить заказы с владельцем."""
-
     order_service: OrderService = OrderService(OrderRepository(db))
     return await order_service.get_orders_with_owner(filters)

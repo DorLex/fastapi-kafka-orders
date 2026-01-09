@@ -7,7 +7,7 @@ from src.common.kafka_layer.utils import deserializer
 
 async def get_consumer(topic: KafkaTopicEnum, group: KafkaGroupEnum) -> AIOKafkaConsumer:
     if not (isinstance(topic, KafkaTopicEnum) and isinstance(group, KafkaGroupEnum)):
-        raise ValueError(f'Переданы невалидные значения: {topic=}, {group=}')
+        raise TypeError(f'Переданы невалидные значения: {topic=}, {group=}')
 
     consumer: AIOKafkaConsumer = AIOKafkaConsumer(
         topic,

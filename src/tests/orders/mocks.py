@@ -8,13 +8,13 @@ class MockKafkaProducer:
 
     async def __aexit__(
         self,
-        exc_type: type[Exception] | None,
-        exc_value: Exception | None,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
         exc_traceback: TracebackType | None,
     ) -> None:
         pass
 
-    async def send_and_wait(self, *args: Any, **kwargs: Any) -> bool:
+    async def send_and_wait(self, *_args: Any, **_kwargs: Any) -> bool:
         return True
 
 

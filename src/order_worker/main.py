@@ -1,5 +1,5 @@
 import asyncio
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
 from src.order_worker.api.consumer import consumer_listening
 
