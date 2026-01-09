@@ -54,9 +54,9 @@ ignore = [
     "TRY003", # длинная строка в Exception('')
     "EM101", # переменную вместо строки в Exception(msg)
     "EM102", # f-строка в Exception(f'')
-    "FIX002", # наличие TODO комментариев
-    "TD002", # отсутствие автора TODO комментария
-    "TD003", # отсутствие ссылки на задачу в TODO комментарии
+    "FIX002", # наличие TODO-комментариев
+    "TD002", # отсутствие автора TODO-комментария
+    "TD003", # отсутствие ссылки на задачу в TODO-комментарии
     "RUF012", # доп. аннотация классовых атрибутов изменяемых типов
     "DJ001", # django.CharField null=True
     "ERA001", # закомментированный код
@@ -67,8 +67,11 @@ ignore = [
     "B008", # вызов функции как аргумента по умолчания в другой функции (мешает писать db: AsyncSession = Depends(get_db))
     "TRY400", # logging.exception вместо logging.error
     "BLE001", # except Exception
+    "RUF001", # "с" кириллицы в строках
+    "RUF002", # "с" кириллицы в docstring
     "RUF003", # "с" кириллицы в комментариях
-    "TRY201" # raise exc
+    "TRY201", # raise exc
+    "TRY300" # return в try:, а не в else:
 ]
 
 [tool.ruff.lint.flake8-quotes]

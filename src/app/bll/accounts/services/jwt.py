@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 from logging import Logger, getLogger
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBasicCredentials
@@ -8,7 +8,6 @@ from jose import JWTError, jwt
 
 from src.app.bll.accounts.dependencies.auth import http_bearer
 from src.app.bll.accounts.dto.token import TokenPayloadDTO, TokenResponseDTO
-from src.app.bll.accounts.dto.user import UserHashedPasswordDTO
 from src.app.bll.accounts.exceptions.auth import (
     FailedCredentialsException,
     InvalidCredentialsException,
@@ -18,6 +17,9 @@ from src.app.bll.accounts.services.password import PasswordService
 from src.app.dal.accounts.repositories.user import UserRepository
 from src.common.constants.auth import JWT_ALGORITHM
 from src.common.envs import env_config
+
+if TYPE_CHECKING:
+    from src.app.bll.accounts.dto.user import UserHashedPasswordDTO
 
 logger: Logger = getLogger(__name__)
 
@@ -54,18 +56,15 @@ class JWTService:
                 algorithms=[JWT_ALGORITHM],
             )
 
-            user_id: int | None = payload.get('user_id')
-            username: str | None = payload.get('username')
-
-            if not (user_id and username):
-                raise InvalidTokenException
-
-            return TokenPayloadDTO(user_id=user_id, username=username)
+            return TokenPayloadDTO(
+                user_id=payload.get('user_id'),
+                username=payload.get('username'),
+            )
 
         except JWTError as exc:
             logger.warning(exc)
-            raise InvalidTokenException
+            raise InvalidTokenException from None
 
         except Exception as exc:
             logger.error(exc)
-            raise FailedCredentialsException
+            raise FailedCredentialsException from None
