@@ -81,4 +81,3 @@ allow-star-arg-any = true  # разрешить Any для *args, **kwargs
 
 [tool.ruff.format]
 quote-style = "single" # формат ковычек
-
