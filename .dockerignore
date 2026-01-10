@@ -1,17 +1,15 @@
-*~
-.*
+**/*~
+**/.*
 
 env/
 venv/
-__pycache__/
+docker/
+**/__pycache__/
 
-*.env
-*.log
-*.db
-*.sqlite3
-*.djcache
-*.rdb
-*.md
-
-*Dockerfile*
-*docker-compose*
+**/*.env
+**/*.log
+**/*.db
+**/*.sqlite3
+**/*.djcache
+**/*.rdb
+**/*.md
