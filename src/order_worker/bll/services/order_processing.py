@@ -24,7 +24,7 @@ class OrderProcessingService:
             async for raw_message in cns:
                 try:
                     await self._process_order(raw_message)
-                except Exception:  # чтобы сервис не падал полностью при рандомной ошибке
+                except Exception:  # чтобы consumer не падал полностью при рандомной ошибке
                     logger.exception('Ошибка при работе consumer')
 
     async def _process_order(self, raw_message: ConsumerRecord) -> None:
