@@ -1,6 +1,5 @@
 import asyncio
-import logging
-from logging import INFO, Logger, getLogger
+from logging import Logger, getLogger
 
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
 
@@ -11,7 +10,6 @@ from src.common.constants.order import OrderStatusEnum
 from src.common.db.connection import AsyncSessionMaker
 from src.common.kafka_layer.dto import KafkaMessageDTO
 
-logging.basicConfig(level=INFO)  # TODO: убрать
 logger: Logger = getLogger(__name__)
 
 

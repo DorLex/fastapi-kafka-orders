@@ -1,5 +1,3 @@
-from logging import Logger, getLogger
-
 from sqlalchemy import ScalarResult, Select, Update, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -9,8 +7,6 @@ from src.app.bll.orders.dto.filters import OrderFilter
 from src.app.bll.orders.dto.order import OrderCreateDTO, OrderPartialUpdateDTO, OrderResponseDTO
 from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
 from src.app.dal.orders.models.order import Order
-
-logger: Logger = getLogger(__name__)
 
 
 class OrderRepository:
