@@ -10,8 +10,6 @@ services:
       JWT_SECRET_KEY:
       JWT_EXPIRATION_MINUTES:
       POSTGRES_HOST:
-    #    volumes:
-    #      - ../logs/orders_app:/project/logs
     ports:
       - "8000:8000"
     depends_on:
@@ -27,8 +25,6 @@ services:
       KAFKA_HOST:
       KAFKA_PORT:
       POSTGRES_HOST:
-    #    volumes:
-    #      - ../logs/order_worker:/project/logs
     depends_on:
       postgres:
         condition: service_started
