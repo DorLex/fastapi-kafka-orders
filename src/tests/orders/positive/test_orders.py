@@ -1,59 +1,75 @@
-# from httpx import AsyncClient
-# from src.tests.orders.mocks import mock_get_producer
-# from starlette import status
-#
-# from src.app.api.v1.orders import orders
-# from src.app.dal.orders.models.order import Order
-# from src.app.dal.orders.repositories.order import OrderRepository
-# from src.common.constants.order import OrderStatusEnum
-#
-#
-# class TestOrdersPositive:
-#     order_data = {
-#         'title': 'test_order_1',
-#         'description': 'test_order_1 description',
-#     }
-#
-#     url_orders = main_app.url_path_for('read_orders')
-#     url_orders_my = main_app.url_path_for('read_my_orders')
-#     url_orders_with_owner = main_app.url_path_for('read_orders_with_owner')
-#
-#     async def test_read_orders(self, client: AsyncClient, auth_headers):
-#         response = await client.get(self.url_orders, headers=auth_headers)
-#
-#         assert response.status_code == status.HTTP_200_OK, response.text
-#         assert len(response.json()) > 0
-#
-#     async def test_add_order(self, client: AsyncClient, auth_headers, monkeypatch):
-#         monkeypatch.setattr(orders, 'get_producer', mock_get_producer)
-#
-#         response = await client.post(self.url_orders, json=self.order_data, headers=auth_headers)
-#         assert response.status_code == status.HTTP_201_CREATED, response.text
-#
-#         order_id = response.json().get('order_id')
-#         async with SessionTest() as session:
-#             db_order: Order = await OrderRepository(session).get_order_by_id(order_id)
-#             assert db_order.title == self.order_data.get('title')
-#             assert db_order.description == self.order_data.get('description')
-#
-#     async def test_read_my_orders(self, client: AsyncClient, auth_headers):
-#         response = await client.get(self.url_orders_my, headers=auth_headers)
-#
-#         assert response.status_code == status.HTTP_200_OK, response.text
-#         assert len(response.json()) > 0
-#
-#     async def test_read_orders_with_owner(self, client: AsyncClient, auth_headers):
-#         response = await client.get(self.url_orders_with_owner, headers=auth_headers)
-#
-#         assert response.status_code == status.HTTP_200_OK, response.text
-#         assert len(response.json()) > 0
-#
-#     async def test_update_order_status(self, base_test_order):
-#         async with SessionTest() as session:
-#             db_order: Order = await OrderRepository(session).update_status(
-#                 base_test_order,
-#                 OrderStatusEnum.completed,
-#             )
-#             await session.commit()
-#
-#             assert db_order.status == OrderStatusEnum.completed
+from typing import TYPE_CHECKING
+
+from _pytest.monkeypatch import MonkeyPatch
+from starlette import status
+from starlette.testclient import TestClient
+
+from src.app.api.v1.orders import orders
+from src.app.bll.orders.dto.order import OrderResponseDTO
+from src.app.bll.orders.services.order import OrderService
+from src.app.dal.orders.repositories.order import OrderRepository
+from src.tests.conftest import TestAsyncSessionMaker
+from src.tests.mocks.kafka.producer import mock_get_producer
+
+if TYPE_CHECKING:
+    from httpx import Response
+
+
+class TestOrderPositive:
+    def test_get_orders(self, client: TestClient, auth_headers: dict) -> None:
+        url: str = '/api/v1/orders'
+        response: Response = client.get(url, headers=auth_headers)
+        response_body: list[dict] = response.json()
+
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert len(response_body) > 0
+
+    def test_get_my_orders(self, client: TestClient, auth_headers: dict) -> None:
+        url: str = '/api/v1/orders/my'
+        response: Response = client.get(url, headers=auth_headers)
+        response_body: list[dict] = response.json()
+
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert len(response_body) > 0
+
+    async def test_create_order(self, client: TestClient, auth_headers: dict, monkeypatch: MonkeyPatch) -> None:
+        monkeypatch.setattr(orders, 'get_producer', mock_get_producer)
+
+        title: str = 'title_1'
+        description: str = 'description 1'
+
+        body: dict = {
+            'title': title,
+            'description': description,
+        }
+
+        url: str = '/api/v1/orders'
+
+        response: Response = client.post(url, json=body, headers=auth_headers)
+        response_body: dict = response.json()
+
+        assert response.status_code == status.HTTP_201_CREATED, response.text
+
+        async with TestAsyncSessionMaker() as db:
+            order_service: OrderService = OrderService(OrderRepository(db))
+            order: OrderResponseDTO | None = await order_service.get_order_by_id(response_body.get('order_id'))
+
+            assert order.title == title
+            assert order.description == description
+
+    def test_update_order_partial(
+        self,
+        client: TestClient,
+        auth_headers: dict,
+        base_test_order: OrderResponseDTO,
+    ) -> None:
+        url: str = f'/api/v1/orders/{base_test_order.id}'
+        body: dict = {
+            'title': 'new_title',
+            'status': 'in_processing',
+            'description': 'new description',
+        }
+
+        response: Response = client.patch(url, json=body, headers=auth_headers)
+
+        assert response.status_code == status.HTTP_200_OK, response.text

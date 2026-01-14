@@ -6,13 +6,6 @@ from src.app.bll.orders.services.order import OrderService
 from src.app.dal.orders.repositories.order import OrderRepository
 from src.tests.conftest import TestAsyncSessionMaker
 
-# @pytest.fixture(scope='session')
-# async def base_test_order_data():
-#     return {
-#         'title': 'base_test_order',
-#         'description': 'base_test_order description',
-#     }
-
 
 @pytest.fixture(scope='session')
 async def base_test_order_data() -> OrderCreateDTO:

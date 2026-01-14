@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from httpx import Response
 
 
-class TestOrdersNegative:
+class TestOrderNegative:
     def test_create_order(self, client: TestClient, auth_headers: dict) -> None:
         url: str = '/api/v1/orders'
         body: dict = {'incorrect_field': 'qwe'}
@@ -18,7 +18,7 @@ class TestOrdersNegative:
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT, response.text
 
-    async def test_update_order_partial(
+    def test_update_order_partial(
         self,
         client: TestClient,
         auth_headers: dict,
