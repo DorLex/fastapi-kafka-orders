@@ -37,7 +37,7 @@ class TestUsers:
             assert user.username == username
             assert user.email == email
 
-    async def test_get_users(self, client: TestClient, auth_headers: dict) -> None:
+    def test_get_users(self, client: TestClient, auth_headers: dict) -> None:
         url: str = '/api/v1/users'
         response: Response = client.get(url, headers=auth_headers)
         response_body: list[dict] = response.json()
@@ -45,7 +45,7 @@ class TestUsers:
         assert response.status_code == status.HTTP_200_OK, response.text
         assert len(response_body) > 0
 
-    async def test_get_user_me(self, client: TestClient, auth_headers: dict, base_test_user: UserResponseDTO) -> None:
+    def test_get_user_me(self, client: TestClient, auth_headers: dict, base_test_user: UserResponseDTO) -> None:
         url: str = '/api/v1/users/me'
         response: Response = client.get(url, headers=auth_headers)
         response_body: dict = response.json()

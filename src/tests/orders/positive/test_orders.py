@@ -1,13 +1,11 @@
-# import pytest
 # from httpx import AsyncClient
+# from src.tests.orders.mocks import mock_get_producer
 # from starlette import status
 #
-# from src.common.constants.order import OrderStatusEnum
+# from src.app.api.v1.orders import orders
 # from src.app.dal.orders.models.order import Order
 # from src.app.dal.orders.repositories.order import OrderRepository
-# from src.app.api.v1.orders import orders
-# from src.tests.conftest import SessionTest, main_app
-# from src.tests.orders.mocks import mock_get_producer
+# from src.common.constants.order import OrderStatusEnum
 #
 #
 # class TestOrdersPositive:
@@ -59,20 +57,3 @@
 #             await session.commit()
 #
 #             assert db_order.status == OrderStatusEnum.completed
-#
-#
-# class TestOrdersNegative:
-#     incorrect_order_data = {
-#         'title': 'test_order_2',
-#     }
-#
-#     url_orders = main_app.url_path_for('add_order')
-#
-#     async def test_add_order(self, client: AsyncClient, auth_headers):
-#         response = await client.post(self.url_orders, json=self.incorrect_order_data, headers=auth_headers)
-#         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
-#
-#     async def test_update_order_status(self, base_test_order):
-#         async with SessionTest() as session:
-#             with pytest.raises(ValueError):
-#                 await OrderRepository(session).update_status(base_test_order, 'incorrect_status')

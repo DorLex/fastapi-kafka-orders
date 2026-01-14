@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from httpx import Response
 
 
-async def test_login(client: TestClient, base_test_user_credentials: UserCreateDTO) -> None:
+def test_login(client: TestClient, base_test_user_credentials: UserCreateDTO) -> None:
     url: str = '/api/v1/auth/token'
 
     body: dict = {
