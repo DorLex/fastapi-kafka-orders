@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.common.db.base_model import Base
 
 if TYPE_CHECKING:
-    from src.app.dal.orders.models.order import Order
+    from src.app.infrastructure.orders.models.order import Order
 
 
 class User(Base):

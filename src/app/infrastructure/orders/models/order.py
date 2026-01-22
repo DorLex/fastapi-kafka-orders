@@ -7,7 +7,7 @@ from src.common.constants.order import OrderStatusEnum
 from src.common.db.base_model import Base
 
 if TYPE_CHECKING:
-    from src.app.dal.accounts.models.user import User
+    from src.app.infrastructure.accounts.models.user import User
 
 
 class Order(Base):

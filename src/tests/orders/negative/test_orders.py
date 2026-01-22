@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from starlette import status
 from starlette.testclient import TestClient
 
-from src.app.bll.orders.dto.order import OrderResponseDTO
+from src.app.business_logic.orders.dto.order import OrderResponseDTO
 
 if TYPE_CHECKING:
     from httpx import Response

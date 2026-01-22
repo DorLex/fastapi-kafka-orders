@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.app.bll.accounts.dependencies.user import get_current_user
-from src.app.bll.accounts.dto.user import UserCreateDTO, UserResponseDTO
-from src.app.bll.accounts.dto.user_with_orders import UserWithOrdersDTO
-from src.app.bll.accounts.services.user import UserService
-from src.app.bll.common.dto.filters import PaginationParams
-from src.app.dal.accounts.repositories.user import UserRepository
+from src.app.business_logic.accounts.dependencies.user import get_current_user
+from src.app.business_logic.accounts.dto.user import UserCreateDTO, UserResponseDTO
+from src.app.business_logic.accounts.dto.user_with_orders import UserWithOrdersDTO
+from src.app.business_logic.accounts.services.user import UserService
+from src.app.business_logic.common.dto.filters import PaginationParams
+from src.app.infrastructure.accounts.repositories.user import UserRepository
 from src.common.db.dependencies import get_db
 
 router: APIRouter = APIRouter(

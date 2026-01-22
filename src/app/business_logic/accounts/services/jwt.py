@@ -6,20 +6,20 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBasicCredentials
 from jose import JWTError, jwt
 
-from src.app.bll.accounts.dependencies.auth import http_bearer
-from src.app.bll.accounts.dto.token import TokenPayloadDTO, TokenResponseDTO
-from src.app.bll.accounts.exceptions.auth import (
+from src.app.business_logic.accounts.dependencies.auth import http_bearer
+from src.app.business_logic.accounts.dto.token import TokenPayloadDTO, TokenResponseDTO
+from src.app.business_logic.accounts.exceptions.auth import (
     FailedCredentialsException,
     InvalidCredentialsException,
     InvalidTokenException,
 )
-from src.app.bll.accounts.services.password import PasswordService
-from src.app.dal.accounts.repositories.user import UserRepository
+from src.app.business_logic.accounts.services.password import PasswordService
+from src.app.infrastructure.accounts.repositories.user import UserRepository
 from src.common.constants.auth import JWT_ALGORITHM
 from src.common.envs import env_config
 
 if TYPE_CHECKING:
-    from src.app.bll.accounts.dto.user import UserHashedPasswordDTO
+    from src.app.business_logic.accounts.dto.user import UserHashedPasswordDTO
 
 logger: Logger = getLogger(__name__)
 

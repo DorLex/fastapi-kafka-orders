@@ -9,17 +9,17 @@ from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from starlette.testclient import TestClient
 
-from src.app.bll.accounts.dto.user import UserCreateDTO, UserResponseDTO
-from src.app.bll.accounts.services.jwt import JWTService
-from src.app.bll.accounts.services.user import UserService
-from src.app.dal.accounts.repositories.user import UserRepository
+from src.app.business_logic.accounts.dto.user import UserCreateDTO, UserResponseDTO
+from src.app.business_logic.accounts.services.jwt import JWTService
+from src.app.business_logic.accounts.services.user import UserService
+from src.app.infrastructure.accounts.repositories.user import UserRepository
 from src.app.main import app
 from src.common.constants.paths import BASE_DIR
 from src.common.db.dependencies import get_db
 from src.common.envs import env_config
 
 if TYPE_CHECKING:
-    from src.app.bll.accounts.dto.token import TokenResponseDTO
+    from src.app.business_logic.accounts.dto.token import TokenResponseDTO
 
 alembic_config: Config = Config(BASE_DIR / 'alembic.ini')
 

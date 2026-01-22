@@ -5,15 +5,20 @@ from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.app.bll.accounts.dependencies.user import get_current_user
-from src.app.bll.accounts.dto.user import UserResponseDTO
-from src.app.bll.common.dto.filters import PaginationParams
-from src.app.bll.orders.dto.filters import OrderFilter
-from src.app.bll.orders.dto.order import OrderCreateDTO, OrderNotificationDTO, OrderPartialUpdateDTO, OrderResponseDTO
-from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
-from src.app.bll.orders.services.kafka import OrderKafkaService
-from src.app.bll.orders.services.order import OrderService
-from src.app.dal.orders.repositories.order import OrderRepository
+from src.app.business_logic.accounts.dependencies.user import get_current_user
+from src.app.business_logic.accounts.dto.user import UserResponseDTO
+from src.app.business_logic.common.dto.filters import PaginationParams
+from src.app.business_logic.orders.dto.filters import OrderFilter
+from src.app.business_logic.orders.dto.order import (
+    OrderCreateDTO,
+    OrderNotificationDTO,
+    OrderPartialUpdateDTO,
+    OrderResponseDTO,
+)
+from src.app.business_logic.orders.dto.order_with_owner import OrderWithOwnerDTO
+from src.app.business_logic.orders.services.kafka import OrderKafkaService
+from src.app.business_logic.orders.services.order import OrderService
+from src.app.infrastructure.orders.repositories.order import OrderRepository
 from src.common.constants.kafka import KafkaTopicEnum
 from src.common.db.dependencies import get_db
 from src.common.kafka_layer.dto import KafkaMessageDTO

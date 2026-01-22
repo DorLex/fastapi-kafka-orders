@@ -3,9 +3,9 @@ from logging import Logger, getLogger
 
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
 
-from src.app.bll.orders.dto.order import OrderPartialUpdateDTO, OrderResponseDTO
-from src.app.bll.orders.services.order import OrderService
-from src.app.dal.orders.repositories.order import OrderRepository
+from src.app.business_logic.orders.dto.order import OrderPartialUpdateDTO, OrderResponseDTO
+from src.app.business_logic.orders.services.order import OrderService
+from src.app.infrastructure.orders.repositories.order import OrderRepository
 from src.common.constants.order import OrderStatusEnum
 from src.common.db.connection import AsyncSessionMaker
 from src.common.kafka_layer.dto import KafkaMessageDTO

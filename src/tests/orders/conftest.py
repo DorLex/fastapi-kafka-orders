@@ -1,9 +1,9 @@
 import pytest
 
-from src.app.bll.accounts.dto.user import UserResponseDTO
-from src.app.bll.orders.dto.order import OrderCreateDTO, OrderResponseDTO
-from src.app.bll.orders.services.order import OrderService
-from src.app.dal.orders.repositories.order import OrderRepository
+from src.app.business_logic.accounts.dto.user import UserResponseDTO
+from src.app.business_logic.orders.dto.order import OrderCreateDTO, OrderResponseDTO
+from src.app.business_logic.orders.services.order import OrderService
+from src.app.infrastructure.orders.repositories.order import OrderRepository
 from src.tests.conftest import TestAsyncSessionMaker
 
 

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from starlette import status
 from starlette.testclient import TestClient
 
-from src.app.bll.accounts.dto.user import UserCreateDTO
+from src.app.business_logic.accounts.dto.user import UserCreateDTO
 
 if TYPE_CHECKING:
     from httpx import Response

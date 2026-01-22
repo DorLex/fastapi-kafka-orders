@@ -1,6 +1,6 @@
 from pydantic import PositiveInt
 
-from src.app.bll.common.dto.filters import PaginationParams
+from src.app.business_logic.common.dto.filters import PaginationParams
 
 
 class OrderFilter(PaginationParams):

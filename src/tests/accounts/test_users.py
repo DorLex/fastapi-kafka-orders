@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 from starlette import status
 from starlette.testclient import TestClient
 
-from src.app.bll.accounts.dto.user import UserHashedPasswordDTO, UserResponseDTO
-from src.app.dal.accounts.repositories.user import UserRepository
+from src.app.business_logic.accounts.dto.user import UserHashedPasswordDTO, UserResponseDTO
+from src.app.infrastructure.accounts.repositories.user import UserRepository
 from src.tests.conftest import TestAsyncSessionMaker
 
 if TYPE_CHECKING:

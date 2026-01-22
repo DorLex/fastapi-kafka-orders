@@ -1,11 +1,11 @@
 from fastapi import HTTPException
 from starlette import status
 
-from src.app.bll.common.dto.filters import PaginationParams
-from src.app.bll.orders.dto.filters import OrderFilter
-from src.app.bll.orders.dto.order import OrderCreateDTO, OrderPartialUpdateDTO, OrderResponseDTO
-from src.app.bll.orders.dto.order_with_owner import OrderWithOwnerDTO
-from src.app.dal.orders.repositories.order import OrderRepository
+from src.app.business_logic.common.dto.filters import PaginationParams
+from src.app.business_logic.orders.dto.filters import OrderFilter
+from src.app.business_logic.orders.dto.order import OrderCreateDTO, OrderPartialUpdateDTO, OrderResponseDTO
+from src.app.business_logic.orders.dto.order_with_owner import OrderWithOwnerDTO
+from src.app.infrastructure.orders.repositories.order import OrderRepository
 
 
 class OrderService:

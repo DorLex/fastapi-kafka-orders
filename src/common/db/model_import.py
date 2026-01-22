@@ -16,9 +16,9 @@ class ModelAutoImporter:
 
     @classmethod
     def import_models(cls) -> None:
-        dal_path: Path = BASE_DIR / 'src/app/dal'
+        infrastructure_path: Path = BASE_DIR / 'src/app/infrastructure'
 
-        for models_path in dal_path.rglob('models'):  # рекурсивный поиск файлов и директорий по шаблону
+        for models_path in infrastructure_path.rglob('models'):  # рекурсивный поиск файлов и директорий по шаблону
             models_path: Path  # абсолютный путь до пакета models
 
             if not models_path.is_dir() or '__pycache__' in str(models_path):
@@ -28,8 +28,8 @@ class ModelAutoImporter:
 
     @classmethod
     def _iter_models_package(cls, models_path: Path) -> None:
-        _models_dir_relative_path: Path = models_path.relative_to(BASE_DIR)  # src/app/dal/accounts/models
-        models_package_path: str = '.'.join(_models_dir_relative_path.parts)  # src.app.dal.accounts.models
+        _models_dir_relative_path: Path = models_path.relative_to(BASE_DIR)  # src/app/infrastructure/accounts/models
+        models_package_path: str = '.'.join(_models_dir_relative_path.parts)  # src.app.infrastructure.accounts.models
 
         for module_info in pkgutil.iter_modules([str(models_path)]):
             module_info: ModuleInfo
@@ -37,7 +37,8 @@ class ModelAutoImporter:
             if module_info.name == '__init__' or module_info.ispkg:
                 continue
 
-            full_module_path: str = f'{models_package_path}.{module_info.name}'  # src.app.dal.accounts.models.user
+            # src.app.infrastructure.accounts.models.user
+            full_module_path: str = f'{models_package_path}.{module_info.name}'
 
             cls._import_module(full_module_path)
 

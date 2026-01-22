@@ -5,9 +5,9 @@ from starlette import status
 from starlette.testclient import TestClient
 
 from src.app.api.v1.orders import orders
-from src.app.bll.orders.dto.order import OrderResponseDTO
-from src.app.bll.orders.services.order import OrderService
-from src.app.dal.orders.repositories.order import OrderRepository
+from src.app.business_logic.orders.dto.order import OrderResponseDTO
+from src.app.business_logic.orders.services.order import OrderService
+from src.app.infrastructure.orders.repositories.order import OrderRepository
 from src.tests.conftest import TestAsyncSessionMaker
 from src.tests.mocks.kafka.producer import mock_get_producer
 

@@ -1,12 +1,12 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.bll.accounts.dto.token import TokenPayloadDTO
-from src.app.bll.accounts.dto.user import UserResponseDTO
-from src.app.bll.accounts.exceptions.auth import FailedCredentialsException
-from src.app.bll.accounts.services.jwt import JWTService
-from src.app.bll.accounts.services.user import UserService
-from src.app.dal.accounts.repositories.user import UserRepository
+from src.app.business_logic.accounts.dto.token import TokenPayloadDTO
+from src.app.business_logic.accounts.dto.user import UserResponseDTO
+from src.app.business_logic.accounts.exceptions.auth import FailedCredentialsException
+from src.app.business_logic.accounts.services.jwt import JWTService
+from src.app.business_logic.accounts.services.user import UserService
+from src.app.infrastructure.accounts.repositories.user import UserRepository
 from src.common.db.dependencies import get_db
 
 

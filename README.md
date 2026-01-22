@@ -9,5 +9,5 @@
 ### ...
 
 ```shell
-alembic init -t async src/app/dal/migrations
+alembic init -t async src/app/infrastructure/migrations
 ```
