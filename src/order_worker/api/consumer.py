@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from src.common.constants.kafka import KafkaGroupEnum, KafkaTopicEnum
 from src.common.kafka_layer.consumer import get_consumer
-from src.order_worker.bll.services.order_processing import OrderProcessingService
+from src.order_worker.business_logic.services.order_processing import OrderProcessingService
 
 if TYPE_CHECKING:
     from aiokafka import AIOKafkaConsumer

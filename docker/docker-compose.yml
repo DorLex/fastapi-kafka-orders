@@ -10,6 +10,8 @@ services:
       JWT_SECRET_KEY:
       JWT_EXPIRATION_MINUTES:
       POSTGRES_HOST:
+      KAFKA_HOST:
+      KAFKA_PORT:
     ports:
       - "8000:8000"
     depends_on:
@@ -17,7 +19,11 @@ services:
         condition: service_started
       kafka:
         condition: service_healthy # ждем, пока у kafka отработает healthcheck
-    command: "uvicorn src.app.main:app --host 0.0.0.0 --port 8000"
+    command: >
+      bash -c "
+        alembic upgrade head &&
+        uvicorn src.app.main:app --host 0.0.0.0 --port 8000
+      "
 
   order_worker:
     image: fastapi-kafka-backend:dev

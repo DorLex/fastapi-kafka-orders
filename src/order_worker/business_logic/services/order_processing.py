@@ -57,4 +57,4 @@ class OrderProcessingService:
 
     async def _count_order_products(self) -> None:
         """Имитация обработки заказа."""
-        await asyncio.sleep(5)
+        await asyncio.sleep(8)
