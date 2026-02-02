@@ -12,6 +12,6 @@ WORKDIR /project
 
 COPY ./pyproject.toml ./uv.lock ./
 
-RUN uv sync
+RUN uv sync --no-group dev --no-group test
 
 COPY ./ ./

@@ -12,5 +12,7 @@ init_admin_models(app)
 
 app.include_router(api_v1_router)
 
-# TODO: обновить README
-# TODO: добавить /admin в README
+# TODO: запустить тесты в докере.
+# TODO: проверить, сколько библиотек установилось в докере.
+# TODO: обновить README.
+# TODO: добавить /admin в README.

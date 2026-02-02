@@ -1,10 +1,12 @@
 ### Стек:
 
-- FastAPI
-- PostgreSQL
-- Apache Kafka
-- pytest
-- Docker
+- `FastAPI`
+- `Sqlalchemy`, `Alembic`
+- `PostgreSQL`
+- `Apache Kafka`
+- `SqlAdmin`
+- `Pytest`
+- `Docker`
 
 ### ...
 
