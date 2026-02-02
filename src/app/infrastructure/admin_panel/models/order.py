@@ -13,6 +13,7 @@ from src.common.db.connection import AsyncSessionMaker
 
 class OrderAdmin(ModelView, model=Order):
     column_list: ClassVar[list[str | InstrumentedAttribute]] = [Order.id, Order.user_id, Order.title, Order.status]
+    column_searchable_list: ClassVar[list[InstrumentedAttribute]] = [Order.title]
     form_excluded_columns: ClassVar[list[str | InstrumentedAttribute]] = [Order.created_at, Order.updated_at]
 
     async def on_model_change(
