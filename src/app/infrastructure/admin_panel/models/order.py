@@ -5,7 +5,10 @@ from sqlalchemy.orm import InstrumentedAttribute
 from starlette.requests import Request
 
 from src.app.business_logic.orders.dto.order import OrderCreateDTO, OrderPartialUpdateDTO
+from src.app.business_logic.orders.services.order import OrderService
 from src.app.infrastructure.orders.models.order import Order
+from src.app.infrastructure.orders.repositories.order import OrderRepository
+from src.common.db.connection import AsyncSessionMaker
 
 
 class OrderAdmin(ModelView, model=Order):
@@ -21,7 +24,20 @@ class OrderAdmin(ModelView, model=Order):
     ) -> None:
         if not is_created:
             OrderPartialUpdateDTO(**data)
-            # TODO: проверить, как работает сейчас updated_at; подумать, как обновить updated_at
             return
 
         OrderCreateDTO(**data)
+
+    async def after_model_change(
+        self,
+        _data: dict,
+        model: Order,
+        is_created: bool,  # noqa: FBT001
+        _request: Request,
+    ) -> None:
+        if not is_created:
+            async with AsyncSessionMaker() as db:
+                order_service: OrderService = OrderService(OrderRepository(db))
+                # триггерим поле updated_at
+                await order_service.update_order_partial(model.id, OrderPartialUpdateDTO())
+                await db.commit()
