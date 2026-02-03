@@ -11,5 +11,3 @@ app: FastAPI = FastAPI(title='Orders-App')
 init_admin_models(app)
 
 app.include_router(api_v1_router)
-
-# TODO: обновить README.
