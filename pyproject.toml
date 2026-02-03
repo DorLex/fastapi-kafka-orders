@@ -1,31 +1,96 @@
-[tool.poetry]
-name = "order-app"
+[project]
+name = "fastapi-kafka-orders"
 version = "0.1.0"
-description = ""
-authors = ["DorLex <dorozhinskiysanya@gmail.com>"]
-readme = "README.md"
+requires-python = ">=3.13"
 
-[tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.109.2"
-uvicorn = { extras = ["standard"], version = "^0.27.0.post1" }
-python-multipart = "^0.0.9"
-python-jose = { extras = ["cryptography"], version = "^3.3.0" }
-passlib = { extras = ["bcrypt"], version = "^1.7.4" }
-sqlalchemy = "^2.0.27"
-alembic = "^1.13.1"
-aiokafka = "^0.10.0"
-email-validator = "^2.1.1"
-fastapi-mail = "^1.4.1"
-asyncpg = "^0.29.0"
+dependencies = [
+    "aiokafka>=0.13.0",
+    "alembic>=1.18.3",
+    "argon2-cffi>=25.1.0",
+    "asyncpg>=0.31.0",
+    "email-validator>=2.3.0",
+    "fastapi>=0.128.0",
+    "pydantic-settings>=2.12.0",
+    "python-jose>=3.5.0",
+    "python-multipart>=0.0.22",
+    "sqladmin>=0.22.0",
+    "sqlalchemy>=2.0.46",
+    "uvicorn>=0.40.0",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+    "ruff>=0.14.14",
+]
+test = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+]
 
 
-[tool.poetry.group.test.dependencies]
-pytest = "^8.1.1"
-httpx = "^0.27.0"
-pytest-dotenv = "^0.5.2"
-pytest-asyncio = "^0.23.6"
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+testpaths = ["src/tests"]
+python_files = "test_*.py"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+fix = true
+show-fixes = true
+
+[tool.ruff.lint]
+# preview = true  # включить дополнительные нестабильные правила
+select = ["ALL"]
+ignore = [
+    "D100", # docstrings
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D203",
+    "D212",
+    "D413",
+    "SLF001", # obj._protected_member
+    "S101", # запрет использования assert
+    "S105", # захардкодженые пароли
+    "S106",
+    "PLC0415", # импорт не в начале модуля (тут игнорится сугубо для Django)
+    "TRY003", # длинная строка в Exception('')
+    "EM101", # переменную вместо строки в Exception(msg)
+    "EM102", # f-строка в Exception(f'')
+    "FIX002", # наличие TODO-комментариев
+    "TD002", # отсутствие автора TODO-комментария
+    "TD003", # отсутствие ссылки на задачу в TODO-комментарии
+    "RUF012", # доп. аннотация классовых атрибутов изменяемых типов
+    "DJ001", # django.CharField null=True
+    "ERA001", # закомментированный код
+    "S113", # request без таймаута
+    "G004", # f-строка в логировании
+    "S108", # использование пути /tmp
+    "FAST002", # FastAPI Depends только через Annotated
+    "B008", # вызов функции как аргумента по умолчания в другой функции (мешает писать db: AsyncSession = Depends(get_db))
+    "TRY400", # logging.exception вместо logging.error
+    "BLE001", # except Exception
+    "RUF001", # "с" кириллицы в строках
+    "RUF002", # "с" кириллицы в docstring
+    "RUF003", # "с" кириллицы в комментариях
+    "TRY201", # raise exc
+    "TRY300" # return в try:, а не в else:
+]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single" # формат ковычек
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true  # разрешить Any для *args, **kwargs
+
+[tool.ruff.format]
+quote-style = "single" # формат ковычек
